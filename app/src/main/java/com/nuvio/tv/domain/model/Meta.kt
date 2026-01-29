@@ -1,0 +1,39 @@
+package com.nuvio.tv.domain.model
+
+data class Meta(
+    val id: String,
+    val type: ContentType,
+    val name: String,
+    val poster: String?,
+    val posterShape: PosterShape,
+    val background: String?,
+    val logo: String?,
+    val description: String?,
+    val releaseInfo: String?,
+    val imdbRating: Float?,
+    val genres: List<String>,
+    val runtime: String?,
+    val director: List<String>,
+    val cast: List<String>,
+    val videos: List<Video>,
+    val country: String?,
+    val awards: String?,
+    val language: String?,
+    val links: List<MetaLink>
+)
+
+data class Video(
+    val id: String,
+    val title: String,
+    val released: String?,
+    val thumbnail: String?,
+    val season: Int?,
+    val episode: Int?,
+    val overview: String?
+)
+
+data class MetaLink(
+    val name: String,
+    val category: String,
+    val url: String
+)

@@ -12,7 +12,7 @@ data class AddonManifestDto(
     @Json(name = "logo") val logo: String? = null,
     @Json(name = "background") val background: String? = null,
     @Json(name = "catalogs") val catalogs: List<CatalogDescriptorDto> = emptyList(),
-    @Json(name = "resources") val resources: List<String> = emptyList(),
+    @Json(name = "resources") val resources: List<Any> = emptyList(),
     @Json(name = "types") val types: List<String> = emptyList()
 )
 

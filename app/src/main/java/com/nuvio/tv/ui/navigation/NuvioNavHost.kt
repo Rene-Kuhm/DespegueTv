@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.nuvio.tv.ui.screens.detail.MetaDetailsScreen
 import com.nuvio.tv.ui.screens.home.HomeScreen
 
 @Composable
@@ -32,10 +33,13 @@ fun NuvioNavHost(
                 navArgument("itemType") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-            val itemType = backStackEntry.arguments?.getString("itemType") ?: ""
-            // DetailScreen will be implemented later
-            // For now, navigate back to home
+            MetaDetailsScreen(
+                onBackPress = { navController.popBackStack() },
+                onPlayClick = { videoId ->
+                    // Navigate to player or stream selection
+                    // TODO: Implement stream selection screen
+                }
+            )
         }
     }
 }

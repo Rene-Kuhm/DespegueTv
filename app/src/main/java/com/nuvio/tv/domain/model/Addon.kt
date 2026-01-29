@@ -8,7 +8,8 @@ data class Addon(
     val logo: String?,
     val baseUrl: String,
     val catalogs: List<CatalogDescriptor>,
-    val types: List<ContentType>
+    val types: List<ContentType>,
+    val resources: List<AddonResource>
 )
 
 data class CatalogDescriptor(
@@ -16,3 +17,10 @@ data class CatalogDescriptor(
     val id: String,
     val name: String
 )
+
+data class AddonResource(
+    val name: String,
+    val types: List<String>,
+    val idPrefixes: List<String>?
+)
+
