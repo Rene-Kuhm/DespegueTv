@@ -224,14 +224,26 @@ private fun ActionIconButton(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun MetaInfoRow(meta: Meta) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Primary row: Genres, Runtime, Release, Ratings
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Show all genres
             if (meta.genres.isNotEmpty()) {
                 Text(
-                    text = meta.genres.firstOrNull() ?: "",
+                    text = meta.genres.joinToString(" • "),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = NuvioTheme.extendedColors.textSecondary
+                )
+                MetaInfoDivider()
+            }
+
+            // Runtime
+            meta.runtime?.let { runtime ->
+                Text(
+                    text = formatRuntime(runtime),
                     style = MaterialTheme.typography.labelLarge,
                     color = NuvioTheme.extendedColors.textSecondary
                 )
@@ -253,23 +265,6 @@ private fun MetaInfoRow(meta: Meta) {
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "⬥",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = androidx.compose.ui.graphics.Color(0xFF5799EF)
-                    )
-                    Text(
-                        text = rating.toInt().toString(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = NuvioTheme.extendedColors.textSecondary
-                    )
-                }
-                MetaInfoDivider()
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
                         text = "★",
                         style = MaterialTheme.typography.labelMedium,
                         color = NuvioTheme.extendedColors.rating
@@ -280,25 +275,48 @@ private fun MetaInfoRow(meta: Meta) {
                         color = NuvioTheme.extendedColors.textSecondary
                     )
                 }
-                MetaInfoDivider()
+            }
+        }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+        // Secondary row: Country, Language
+        val hasSecondaryInfo = meta.country != null || meta.language != null
+        if (hasSecondaryInfo) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                meta.country?.let { country ->
                     Text(
-                        text = "●",
+                        text = country,
                         style = MaterialTheme.typography.labelMedium,
-                        color = androidx.compose.ui.graphics.Color(0xFFE74C3C)
+                        color = NuvioTheme.extendedColors.textTertiary
                     )
+                }
+
+                if (meta.country != null && meta.language != null) {
+                    MetaInfoDivider()
+                }
+
+                meta.language?.let { language ->
                     Text(
-                        text = "${(rating * 10).toInt()}",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = NuvioTheme.extendedColors.textSecondary
+                        text = language.uppercase(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = NuvioTheme.extendedColors.textTertiary
                     )
                 }
             }
         }
+    }
+}
+
+private fun formatRuntime(runtime: String): String {
+    val minutes = runtime.filter { it.isDigit() }.toIntOrNull() ?: return runtime
+    return if (minutes >= 60) {
+        val hours = minutes / 60
+        val mins = minutes % 60
+        if (mins > 0) "${hours}h ${mins}m" else "${hours}h"
+    } else {
+        "${minutes}m"
     }
 }
 

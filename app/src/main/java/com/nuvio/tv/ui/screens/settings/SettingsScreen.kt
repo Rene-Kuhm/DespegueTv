@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +42,8 @@ import com.nuvio.tv.ui.theme.NuvioColors
 
 @Composable
 fun SettingsScreen(
-    onNavigateToPlugins: () -> Unit = {}
+    onNavigateToPlugins: () -> Unit = {},
+    onNavigateToTmdb: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -77,6 +79,15 @@ fun SettingsScreen(
                     title = "Plugins",
                     subtitle = "Manage local scrapers and providers",
                     onClick = onNavigateToPlugins
+                )
+            }
+
+            item {
+                SettingsItem(
+                    icon = Icons.Default.Tune,
+                    title = "TMDB enrichment",
+                    subtitle = "Choose which metadata comes from TMDB",
+                    onClick = onNavigateToTmdb
                 )
             }
             

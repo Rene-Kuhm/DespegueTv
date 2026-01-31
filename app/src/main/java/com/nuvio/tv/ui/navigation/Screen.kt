@@ -9,8 +9,8 @@ sealed class Screen(val route: String) {
             URLEncoder.encode(value, "UTF-8").replace("+", "%20")
 
         fun createRoute(itemId: String, itemType: String, addonBaseUrl: String? = null): String {
-            val encodedAddonBaseUrl = addonBaseUrl?.let { encode(it) } ?: ""
-            return "detail/$itemId/$itemType?addonBaseUrl=$encodedAddonBaseUrl"
+            val encodedAddon = addonBaseUrl?.let { encode(it) } ?: ""
+            return "detail/$itemId/$itemType?addonBaseUrl=$encodedAddon"
         }
     }
     data object Stream : Screen("stream/{videoId}/{contentType}/{title}?poster={poster}&backdrop={backdrop}&logo={logo}&season={season}&episode={episode}&episodeName={episodeName}&genres={genres}&year={year}") {
@@ -59,6 +59,7 @@ sealed class Screen(val route: String) {
     }
     data object Search : Screen("search")
     data object Settings : Screen("settings")
+    data object TmdbSettings : Screen("tmdb_settings")
     data object AddonManager : Screen("addon_manager")
     data object Plugins : Screen("plugins")
 }

@@ -58,7 +58,9 @@ class HomeViewModel @Inject constructor(
 
                 // Build catalog order based on addon manifest order
                 addons.forEach { addon ->
-                    addon.catalogs.forEach { catalog ->
+                    addon.catalogs
+                        .filterNot { it.isSearchOnlyCatalog() }
+                        .forEach { catalog ->
                         val key = catalogKey(
                             addonId = addon.id,
                             type = catalog.type.toApiString(),
@@ -67,14 +69,16 @@ class HomeViewModel @Inject constructor(
                         if (key !in catalogOrder) {
                             catalogOrder.add(key)
                         }
-                    }
+                        }
                 }
 
                 // Load catalogs
                 addons.forEach { addon ->
-                    addon.catalogs.forEach { catalog ->
-                        loadCatalog(addon, catalog)
-                    }
+                    addon.catalogs
+                        .filterNot { it.isSearchOnlyCatalog() }
+                        .forEach { catalog ->
+                            loadCatalog(addon, catalog)
+                        }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
@@ -91,8 +95,7 @@ class HomeViewModel @Inject constructor(
                 catalogId = catalog.id,
                 catalogName = catalog.name,
                 type = catalog.type.toApiString(),
-                skip = 0,
-                extraArgs = emptyMap()
+                skip = 0
             ).collect { result ->
                 when (result) {
                     is NetworkResult.Success -> {
@@ -134,8 +137,7 @@ class HomeViewModel @Inject constructor(
                 catalogId = catalogId,
                 catalogName = currentRow.catalogName,
                 type = currentRow.type.toApiString(),
-                skip = nextSkip,
-                extraArgs = emptyMap()
+                skip = nextSkip
             ).collect { result ->
                 when (result) {
                     is NetworkResult.Success -> {
@@ -170,5 +172,9 @@ class HomeViewModel @Inject constructor(
 
     private fun catalogKey(addonId: String, type: String, catalogId: String): String {
         return "${addonId}_${type}_${catalogId}"
+    }
+
+    private fun CatalogDescriptor.isSearchOnlyCatalog(): Boolean {
+        return extra.any { extra -> extra.name == "search" && extra.isRequired }
     }
 }

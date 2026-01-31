@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -220,11 +221,25 @@ private fun EpisodeCard(
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
-                Text(
-                    text = "S${episode.season?.toString()?.padStart(2, '0')}E${episode.episode?.toString()?.padStart(2, '0')} - $formattedDate",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = NuvioTheme.extendedColors.textSecondary
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "S${episode.season?.toString()?.padStart(2, '0')}E${episode.episode?.toString()?.padStart(2, '0')} - $formattedDate",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = NuvioTheme.extendedColors.textSecondary
+                    )
+                    
+                    episode.runtime?.let { runtime ->
+                        Text(
+                            text = "${runtime}m",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = NuvioTheme.extendedColors.textTertiary
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(4.dp))
 

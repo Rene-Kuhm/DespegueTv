@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.core.network.NetworkResult
+import com.nuvio.tv.core.tmdb.TmdbMetadataService
+import com.nuvio.tv.core.tmdb.TmdbService
+import com.nuvio.tv.data.local.TmdbSettingsDataStore
 import com.nuvio.tv.domain.model.Meta
 import com.nuvio.tv.domain.model.Video
 import com.nuvio.tv.domain.repository.MetaRepository
@@ -19,6 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MetaDetailsViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
+    private val tmdbSettingsDataStore: TmdbSettingsDataStore,
+    private val tmdbService: TmdbService,
+    private val tmdbMetadataService: TmdbMetadataService,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -59,14 +65,14 @@ class MetaDetailsViewModel @Inject constructor(
             }
 
             if (preferredMeta != null) {
-                applyMeta(preferredMeta)
+                applyMetaWithEnrichment(preferredMeta)
                 return@launch
             }
 
             // 2) Fallback: first addon that can provide meta (often Cinemeta)
             metaRepository.getMetaFromAllAddons(type = itemType, id = itemId).collect { result ->
                 when (result) {
-                    is NetworkResult.Success -> applyMeta(result.data)
+                    is NetworkResult.Success -> applyMetaWithEnrichment(result.data)
                     is NetworkResult.Error -> {
                         _uiState.update { it.copy(isLoading = false, error = result.message) }
                     }
@@ -98,6 +104,91 @@ class MetaDetailsViewModel @Inject constructor(
                 error = null
             )
         }
+    }
+
+    private suspend fun applyMetaWithEnrichment(meta: Meta) {
+        val enriched = enrichMeta(meta)
+        applyMeta(enriched)
+    }
+
+    private suspend fun enrichMeta(meta: Meta): Meta {
+        val settings = tmdbSettingsDataStore.settings.first()
+        if (!settings.enabled) return meta
+
+        val tmdbId = tmdbService.ensureTmdbId(meta.id, meta.type.toApiString())
+            ?: tmdbService.ensureTmdbId(itemId, itemType)
+            ?: return meta
+
+        val enrichment = tmdbMetadataService.fetchEnrichment(tmdbId, meta.type)
+
+        var updated = meta
+
+        // Group: Artwork (logo, backdrop)
+        if (enrichment != null && settings.useArtwork) {
+            updated = updated.copy(
+                background = enrichment.backdrop ?: updated.background,
+                logo = enrichment.logo ?: updated.logo
+            )
+        }
+
+        // Group: Basic Info (description, genres, rating)
+        if (enrichment != null && settings.useBasicInfo) {
+            updated = updated.copy(description = enrichment.description ?: updated.description)
+            if (enrichment.genres.isNotEmpty()) {
+                updated = updated.copy(genres = enrichment.genres)
+            }
+            updated = updated.copy(imdbRating = enrichment.rating?.toFloat() ?: updated.imdbRating)
+        }
+
+        // Group: Details (runtime, release info, country, language)
+        if (enrichment != null && settings.useDetails) {
+            updated = updated.copy(
+                runtime = enrichment.runtimeMinutes?.toString() ?: updated.runtime,
+                releaseInfo = enrichment.releaseInfo ?: updated.releaseInfo,
+                country = enrichment.countries?.joinToString(", ") ?: updated.country,
+                language = enrichment.language ?: updated.language
+            )
+        }
+
+        // Group: Credits (cast with photos, director, writer)
+        if (enrichment != null && settings.useCredits) {
+            if (enrichment.castMembers.isNotEmpty()) {
+                updated = updated.copy(
+                    castMembers = enrichment.castMembers,
+                    cast = enrichment.castMembers.map { it.name }
+                )
+            }
+            updated = updated.copy(
+                director = if (enrichment.director.isNotEmpty()) enrichment.director else updated.director,
+                writer = if (enrichment.writer.isNotEmpty()) enrichment.writer else updated.writer
+            )
+        }
+
+        // Group: Episodes (titles, overviews, thumbnails, runtime)
+        if (settings.useEpisodes && meta.type.toApiString() in listOf("series", "tv")) {
+            val seasonNumbers = meta.videos.mapNotNull { it.season }.distinct()
+            val episodeMap = tmdbMetadataService.fetchEpisodeEnrichment(tmdbId, seasonNumbers)
+            if (episodeMap.isNotEmpty()) {
+                updated = updated.copy(
+                    videos = meta.videos.map { video ->
+                        val season = video.season
+                        val episode = video.episode
+                        val key = if (season != null && episode != null) season to episode else null
+                        val ep = key?.let { episodeMap[it] }
+
+                        video.copy(
+                            title = ep?.title ?: video.title,
+                            overview = ep?.overview ?: video.overview,
+                            released = ep?.airDate ?: video.released,
+                            thumbnail = ep?.thumbnail ?: video.thumbnail,
+                            runtime = ep?.runtimeMinutes
+                        )
+                    }
+                )
+            }
+        }
+
+        return updated
     }
 
     private fun selectSeason(season: Int) {

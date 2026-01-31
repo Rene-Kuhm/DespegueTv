@@ -13,6 +13,7 @@ import com.nuvio.tv.ui.screens.player.PlayerScreen
 import com.nuvio.tv.ui.screens.plugin.PluginScreen
 import com.nuvio.tv.ui.screens.search.SearchScreen
 import com.nuvio.tv.ui.screens.settings.SettingsScreen
+import com.nuvio.tv.ui.screens.settings.TmdbSettingsScreen
 import com.nuvio.tv.ui.screens.stream.StreamScreen
 
 @Composable
@@ -157,7 +158,14 @@ fun NuvioNavHost(
 
         composable(Screen.Settings.route) {
             SettingsScreen(
-                onNavigateToPlugins = { navController.navigate(Screen.Plugins.route) }
+                onNavigateToPlugins = { navController.navigate(Screen.Plugins.route) },
+                onNavigateToTmdb = { navController.navigate(Screen.TmdbSettings.route) }
+            )
+        }
+
+        composable(Screen.TmdbSettings.route) {
+            TmdbSettingsScreen(
+                onBackPress = { navController.popBackStack() }
             )
         }
 

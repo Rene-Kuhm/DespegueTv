@@ -37,7 +37,8 @@ data class Video(
     val thumbnail: String?,
     val season: Int?,
     val episode: Int?,
-    val overview: String?
+    val overview: String?,
+    val runtime: Int? = null // episode runtime in minutes
 )
 
 data class MetaLink(
