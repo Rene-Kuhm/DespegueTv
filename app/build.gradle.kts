@@ -96,6 +96,9 @@ dependencies {
     implementation(libs.media3.ui)
     implementation(libs.media3.session)
     implementation(libs.media3.common)
+    
+    // Media3 FFmpeg Decoder Extension (locally built AAR)
+    implementation(files("libs/media3-decoder-ffmpeg.aar"))
 
     // Local Plugin System
     implementation(libs.quickjs.kt)

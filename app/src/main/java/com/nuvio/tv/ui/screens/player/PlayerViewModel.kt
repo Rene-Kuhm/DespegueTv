@@ -10,6 +10,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.Tracks
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.dash.DashMediaSource
@@ -66,7 +67,12 @@ class PlayerViewModel @Inject constructor(
         }
 
         try {
-            _exoPlayer = ExoPlayer.Builder(context).build().apply {
+            val renderersFactory = DefaultRenderersFactory(context)
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+
+            _exoPlayer = ExoPlayer.Builder(context)
+                .setRenderersFactory(renderersFactory)
+                .build().apply {
                 // Create data source factory with optional headers
                 val dataSourceFactory = DefaultHttpDataSource.Factory().apply {
                     setDefaultRequestProperties(parseHeaders())
@@ -275,17 +281,23 @@ class PlayerViewModel @Inject constructor(
                 _exoPlayer?.let { player ->
                     player.seekTo((player.currentPosition + 10000).coerceAtMost(player.duration))
                 }
-                showControlsTemporarily()
+                if (_uiState.value.showControls) {
+                    scheduleHideControls()
+                }
             }
             PlayerEvent.OnSeekBackward -> {
                 _exoPlayer?.let { player ->
                     player.seekTo((player.currentPosition - 10000).coerceAtLeast(0))
                 }
-                showControlsTemporarily()
+                if (_uiState.value.showControls) {
+                    scheduleHideControls()
+                }
             }
             is PlayerEvent.OnSeekTo -> {
                 _exoPlayer?.seekTo(event.position)
-                showControlsTemporarily()
+                if (_uiState.value.showControls) {
+                    scheduleHideControls()
+                }
             }
             is PlayerEvent.OnSelectAudioTrack -> {
                 selectAudioTrack(event.index)

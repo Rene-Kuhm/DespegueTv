@@ -89,7 +89,8 @@ fun PlayerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val focusRequester = remember { FocusRequester() }
+    val containerFocusRequester = remember { FocusRequester() }
+    val playPauseFocusRequester = remember { FocusRequester() }
 
     BackHandler {
         onBackPress()
@@ -114,39 +115,74 @@ fun PlayerScreen(
         }
     }
 
-    // Request focus for key events
+    // Request focus for key events when controls are hidden
+    LaunchedEffect(uiState.showControls) {
+        if (uiState.showControls) {
+            // When controls are shown, focus the play/pause button
+            try {
+                playPauseFocusRequester.requestFocus()
+            } catch (e: Exception) {
+                // Focus requester may not be ready yet
+            }
+        } else {
+            // When controls are hidden, focus the container for key events
+            try {
+                containerFocusRequester.requestFocus()
+            } catch (e: Exception) {
+                // Focus requester may not be ready yet
+            }
+        }
+    }
+
+    // Initial focus
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        containerFocusRequester.requestFocus()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .focusRequester(focusRequester)
+            .focusRequester(containerFocusRequester)
             .focusable()
             .onKeyEvent { keyEvent ->
                 if (keyEvent.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) {
                     when (keyEvent.nativeKeyEvent.keyCode) {
                         KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                            if (uiState.showControls) {
-                                viewModel.onEvent(PlayerEvent.OnPlayPause)
-                            } else {
+                            if (!uiState.showControls) {
                                 viewModel.onEvent(PlayerEvent.OnToggleControls)
+                                true
+                            } else {
+                                // Let the focused button handle it
+                                false
                             }
-                            true
                         }
                         KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                            viewModel.onEvent(PlayerEvent.OnSeekForward)
-                            true
+                            if (!uiState.showControls) {
+                                viewModel.onEvent(PlayerEvent.OnSeekForward)
+                                true
+                            } else {
+                                // Let focus system handle navigation when controls are visible
+                                false
+                            }
                         }
                         KeyEvent.KEYCODE_DPAD_LEFT -> {
-                            viewModel.onEvent(PlayerEvent.OnSeekBackward)
-                            true
+                            if (!uiState.showControls) {
+                                viewModel.onEvent(PlayerEvent.OnSeekBackward)
+                                true
+                            } else {
+                                // Let focus system handle navigation when controls are visible
+                                false
+                            }
                         }
                         KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> {
-                            viewModel.onEvent(PlayerEvent.OnToggleControls)
-                            true
+                            if (!uiState.showControls) {
+                                viewModel.onEvent(PlayerEvent.OnToggleControls)
+                                true
+                            } else {
+                                // Let focus system handle navigation when controls are visible
+                                false
+                            }
                         }
                         KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
                             viewModel.onEvent(PlayerEvent.OnPlayPause)
@@ -206,6 +242,7 @@ fun PlayerScreen(
         ) {
             PlayerControlsOverlay(
                 uiState = uiState,
+                playPauseFocusRequester = playPauseFocusRequester,
                 onPlayPause = { viewModel.onEvent(PlayerEvent.OnPlayPause) },
                 onSeekForward = { viewModel.onEvent(PlayerEvent.OnSeekForward) },
                 onSeekBackward = { viewModel.onEvent(PlayerEvent.OnSeekBackward) },
@@ -253,6 +290,7 @@ fun PlayerScreen(
 @Composable
 private fun PlayerControlsOverlay(
     uiState: PlayerUiState,
+    playPauseFocusRequester: FocusRequester,
     onPlayPause: () -> Unit,
     onSeekForward: () -> Unit,
     onSeekBackward: () -> Unit,
@@ -349,6 +387,7 @@ private fun PlayerControlsOverlay(
                     // Play/Pause button (larger)
                     PlayPauseButton(
                         isPlaying = uiState.isPlaying,
+                        focusRequester = playPauseFocusRequester,
                         onClick = onPlayPause
                     )
 
@@ -413,6 +452,7 @@ private fun PlayerControlsOverlay(
 @Composable
 private fun PlayPauseButton(
     isPlaying: Boolean,
+    focusRequester: FocusRequester,
     onClick: () -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -421,6 +461,7 @@ private fun PlayPauseButton(
         onClick = onClick,
         modifier = Modifier
             .size(64.dp)
+            .focusRequester(focusRequester)
             .onFocusChanged { isFocused = it.isFocused },
         colors = IconButtonDefaults.colors(
             containerColor = Color.White.copy(alpha = 0.2f),
