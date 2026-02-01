@@ -9,23 +9,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
-import androidx.tv.foundation.lazy.list.TvLazyRow
-import androidx.tv.foundation.lazy.list.itemsIndexed
-import androidx.tv.foundation.lazy.list.rememberTvLazyListState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -36,34 +30,11 @@ import com.nuvio.tv.ui.theme.NuvioColors
 @Composable
 fun CatalogRowSection(
     catalogRow: CatalogRow,
-    rowIndex: Int,
-    isRestoreFocus: Boolean,
     onItemClick: (String, String, String) -> Unit,
-    onRowFocused: (Int) -> Unit,
     onLoadMore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val listState = rememberTvLazyListState()
-
-    // Track the focused item index within this row
-    var focusedItemIndex by rememberSaveable { mutableIntStateOf(0) }
-
-    // Create focus requesters for each item
-    val focusRequesters = remember(catalogRow.items.size) {
-        List(catalogRow.items.size) { FocusRequester() }
-    }
-
-    // Restore focus when returning to this screen
-    LaunchedEffect(isRestoreFocus, catalogRow.items.size) {
-        if (isRestoreFocus && catalogRow.items.isNotEmpty()) {
-            val safeIndex = focusedItemIndex.coerceIn(0, catalogRow.items.size - 1)
-            try {
-                focusRequesters.getOrNull(safeIndex)?.requestFocus()
-            } catch (_: Exception) {
-                // Focus request might fail if view is not ready
-            }
-        }
-    }
+    val listState = rememberLazyListState()
 
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -101,7 +72,7 @@ fun CatalogRowSection(
             }
         }
 
-        TvLazyRow(
+        LazyRow(
             state = listState,
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 48.dp),
@@ -115,19 +86,6 @@ fun CatalogRowSection(
                     item = item,
                     onClick = { onItemClick(item.id, item.type.toApiString(), catalogRow.addonBaseUrl) },
                     modifier = Modifier
-                        .then(
-                            if (index < focusRequesters.size) {
-                                Modifier.focusRequester(focusRequesters[index])
-                            } else {
-                                Modifier
-                            }
-                        )
-                        .onFocusChanged { focusState ->
-                            if (focusState.isFocused) {
-                                focusedItemIndex = index
-                                onRowFocused(rowIndex)
-                            }
-                        }
                 )
             }
 

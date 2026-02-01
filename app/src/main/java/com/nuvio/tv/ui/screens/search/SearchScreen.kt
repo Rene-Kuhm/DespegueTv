@@ -7,25 +7,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.tv.foundation.lazy.list.TvLazyColumn
-import androidx.tv.foundation.lazy.list.itemsIndexed
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -42,26 +34,13 @@ fun SearchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val searchFocusRequester = remember { FocusRequester() }
-
-    // Track focused row index to restore focus after navigation
-    var focusedRowIndex by rememberSaveable { mutableIntStateOf(0) }
-
-    LaunchedEffect(Unit) {
-        try {
-            searchFocusRequester.requestFocus()
-        } catch (_: Exception) {
-            // Focus request might fail if view is not ready
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(NuvioColors.Background),
         contentAlignment = Alignment.TopCenter
     ) {
-        TvLazyColumn(
+        LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(28.dp)
@@ -72,8 +51,7 @@ fun SearchScreen(
                     onValueChange = { viewModel.onEvent(SearchEvent.QueryChanged(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 48.dp)
-                        .focusRequester(searchFocusRequester),
+                        .padding(horizontal = 48.dp),
                     singleLine = true,
                     placeholder = {
                         Text(
@@ -157,13 +135,8 @@ fun SearchScreen(
                     ) { index, catalogRow ->
                         CatalogRowSection(
                             catalogRow = catalogRow,
-                            rowIndex = index,
-                            isRestoreFocus = index == focusedRowIndex,
                             onItemClick = { id, type, addonBaseUrl ->
                                 onNavigateToDetail(id, type, addonBaseUrl)
-                            },
-                            onRowFocused = { rowIndex ->
-                                focusedRowIndex = rowIndex
                             },
                             onLoadMore = {
                                 viewModel.onEvent(
