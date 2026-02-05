@@ -44,8 +44,6 @@ fun TmdbSettingsScreen(
     viewModel: TmdbSettingsViewModel = hiltViewModel(),
     onBackPress: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     BackHandler { onBackPress() }
 
     Column(
@@ -70,8 +68,35 @@ fun TmdbSettingsScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        TmdbSettingsContent(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun TmdbSettingsContent(
+    viewModel: TmdbSettingsViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "TMDB Enrichment",
+            style = MaterialTheme.typography.headlineMedium,
+            color = NuvioColors.Secondary
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Choose which metadata fields should come from TMDB",
+            style = MaterialTheme.typography.bodyMedium,
+            color = NuvioColors.TextSecondary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         TvLazyColumn(
-            contentPadding = PaddingValues(top = 4.dp, bottom = 32.dp),
+            contentPadding = PaddingValues(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {

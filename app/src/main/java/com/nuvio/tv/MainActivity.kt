@@ -86,7 +86,6 @@ class MainActivity : ComponentActivity() {
                             Screen.Home.route,
                             Screen.Search.route,
                             Screen.Library.route,
-                            Screen.Settings.route,
                             Screen.AddonManager.route
                         )
                     }

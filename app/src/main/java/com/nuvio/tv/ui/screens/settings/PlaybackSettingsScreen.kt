@@ -104,16 +104,6 @@ fun PlaybackSettingsScreen(
     viewModel: PlaybackSettingsViewModel = hiltViewModel(),
     onBackPress: () -> Unit = {}
 ) {
-    val playerSettings by viewModel.playerSettings.collectAsState(initial = PlayerSettings())
-    val coroutineScope = rememberCoroutineScope()
-    
-    // Dialog states
-    var showLanguageDialog by remember { mutableStateOf(false) }
-    var showSecondaryLanguageDialog by remember { mutableStateOf(false) }
-    var showTextColorDialog by remember { mutableStateOf(false) }
-    var showBackgroundColorDialog by remember { mutableStateOf(false) }
-    var showOutlineColorDialog by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,27 +122,62 @@ fun PlaybackSettingsScreen(
                     tint = NuvioColors.TextPrimary
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Text(
                 text = "Playback Settings",
                 style = MaterialTheme.typography.headlineLarge,
                 color = NuvioColors.TextPrimary
             )
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Configure video playback and subtitle options",
             style = MaterialTheme.typography.bodyMedium,
             color = NuvioColors.TextSecondary,
             modifier = Modifier.padding(start = 56.dp)
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
+        PlaybackSettingsContent(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun PlaybackSettingsContent(
+    viewModel: PlaybackSettingsViewModel = hiltViewModel()
+) {
+    val playerSettings by viewModel.playerSettings.collectAsState(initial = PlayerSettings())
+    val coroutineScope = rememberCoroutineScope()
+
+    // Dialog states
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showSecondaryLanguageDialog by remember { mutableStateOf(false) }
+    var showTextColorDialog by remember { mutableStateOf(false) }
+    var showBackgroundColorDialog by remember { mutableStateOf(false) }
+    var showOutlineColorDialog by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Playback",
+            style = MaterialTheme.typography.headlineMedium,
+            color = NuvioColors.Secondary
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Configure video playback and subtitle options",
+            style = MaterialTheme.typography.bodyMedium,
+            color = NuvioColors.TextSecondary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         // Settings list
         TvLazyColumn(
             contentPadding = PaddingValues(top = 4.dp, bottom = 32.dp),

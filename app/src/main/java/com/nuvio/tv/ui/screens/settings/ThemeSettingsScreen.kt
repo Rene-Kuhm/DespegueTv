@@ -51,8 +51,6 @@ fun ThemeSettingsScreen(
     viewModel: ThemeSettingsViewModel = hiltViewModel(),
     onBackPress: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     BackHandler { onBackPress() }
 
     Column(
@@ -77,9 +75,36 @@ fun ThemeSettingsScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        ThemeSettingsContent(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun ThemeSettingsContent(
+    viewModel: ThemeSettingsViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Appearance",
+            style = MaterialTheme.typography.headlineMedium,
+            color = NuvioColors.Secondary
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Choose your color theme",
+            style = MaterialTheme.typography.bodyMedium,
+            color = NuvioColors.TextSecondary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         TvLazyVerticalGrid(
             columns = TvGridCells.Fixed(3),
-            contentPadding = PaddingValues(top = 4.dp, bottom = 32.dp),
+            contentPadding = PaddingValues(bottom = 32.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {

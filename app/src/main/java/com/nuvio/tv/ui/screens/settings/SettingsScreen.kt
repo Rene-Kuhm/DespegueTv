@@ -2,13 +2,14 @@
 
 package com.nuvio.tv.ui.screens.settings
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
@@ -31,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.tv.foundation.lazy.list.TvLazyColumn
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.material3.Border
 import androidx.tv.material3.Card
 import androidx.tv.material3.CardDefaults
@@ -41,108 +43,96 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import com.nuvio.tv.ui.screens.plugin.PluginScreenContent
+import com.nuvio.tv.ui.screens.plugin.PluginViewModel
 import com.nuvio.tv.ui.theme.NuvioColors
+
+private enum class SettingsCategory(val displayName: String, val icon: ImageVector) {
+    APPEARANCE("Appearance", Icons.Default.Palette),
+    PLUGINS("Plugins", Icons.Default.Build),
+    TMDB("TMDB Enrichment", Icons.Default.Tune),
+    PLAYBACK("Playback", Icons.Default.Settings),
+    ABOUT("About", Icons.Default.Info)
+}
 
 @Composable
 fun SettingsScreen(
     onNavigateToPlugins: () -> Unit = {},
-    onNavigateToTmdb: () -> Unit = {},
-    onNavigateToTheme: () -> Unit = {},
-    onNavigateToPlayback: () -> Unit = {},
-    onNavigateToAbout: () -> Unit = {}
 ) {
-    Column(
+    var selectedCategory by remember { mutableStateOf(SettingsCategory.APPEARANCE) }
+
+    Row(
         modifier = Modifier
             .fillMaxSize()
             .background(NuvioColors.Background)
-            .padding(horizontal = 48.dp, vertical = 24.dp)
     ) {
-        // Header
-        Text(
-            text = "Settings",
-            style = MaterialTheme.typography.headlineLarge,
-            color = NuvioColors.TextPrimary
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Text(
-            text = "Configure your streaming experience",
-            style = MaterialTheme.typography.bodyMedium,
-            color = NuvioColors.TextSecondary
-        )
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        // Settings list
-        TvLazyColumn(
-            contentPadding = PaddingValues(top = 4.dp, bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        // Left sidebar
+        Column(
+            modifier = Modifier
+                .width(300.dp)
+                .fillMaxHeight()
+                .padding(start = 40.dp, top = 32.dp, bottom = 24.dp, end = 16.dp)
         ) {
-            item {
-                SettingsItem(
-                    icon = Icons.Default.Palette,
-                    title = "Appearance",
-                    subtitle = "Choose your color theme",
-                    onClick = onNavigateToTheme
-                )
-            }
+            Text(
+                text = "Settings",
+                style = MaterialTheme.typography.headlineLarge,
+                color = NuvioColors.TextPrimary,
+                fontWeight = FontWeight.Bold
+            )
 
-            item {
-                SettingsItem(
-                    icon = Icons.Default.Build,
-                    title = "Plugins",
-                    subtitle = "Manage local scrapers and providers",
-                    onClick = onNavigateToPlugins
-                )
-            }
+            Spacer(modifier = Modifier.height(32.dp))
 
-            item {
-                SettingsItem(
-                    icon = Icons.Default.Tune,
-                    title = "TMDB enrichment",
-                    subtitle = "Choose which metadata comes from TMDB",
-                    onClick = onNavigateToTmdb
+            SettingsCategory.entries.forEach { category ->
+                SidebarCategoryItem(
+                    category = category,
+                    isSelected = selectedCategory == category,
+                    onClick = {
+                        selectedCategory = category
+                    }
                 )
+                Spacer(modifier = Modifier.height(4.dp))
             }
+        }
 
-            item {
-                SettingsItem(
-                    icon = Icons.Default.Settings,
-                    title = "Playback",
-                    subtitle = "Video quality, subtitles, and player settings",
-                    onClick = onNavigateToPlayback
+        // Right content panel
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp, end = 32.dp, bottom = 16.dp)
+                .background(
+                    color = NuvioColors.BackgroundCard,
+                    shape = RoundedCornerShape(16.dp)
                 )
-            }
-            
-            item {
-                SettingsItem(
-                    icon = Icons.Default.Info,
-                    title = "About",
-                    subtitle = "App version and information",
-                    onClick = onNavigateToAbout
-                )
+                .padding(32.dp)
+        ) {
+            Crossfade(targetState = selectedCategory, label = "settings_content") { category ->
+                when (category) {
+                    SettingsCategory.APPEARANCE -> ThemeSettingsContent()
+                    SettingsCategory.PLAYBACK -> PlaybackSettingsContent()
+                    SettingsCategory.TMDB -> TmdbSettingsContent()
+                    SettingsCategory.ABOUT -> AboutSettingsContent()
+                    SettingsCategory.PLUGINS -> PluginScreenContent()
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SettingsItem(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
+private fun SidebarCategoryItem(
+    category: SettingsCategory,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    
+
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .onFocusChanged { isFocused = it.isFocused },
         colors = CardDefaults.colors(
-            containerColor = NuvioColors.BackgroundCard,
+            containerColor = if (isSelected) NuvioColors.FocusBackground else Color.Transparent,
             focusedContainerColor = NuvioColors.FocusBackground
         ),
         border = CardDefaults.border(
@@ -152,46 +142,27 @@ private fun SettingsItem(
             )
         ),
         shape = CardDefaults.shape(RoundedCornerShape(12.dp)),
-        scale = CardDefaults.scale(focusedScale = 1.02f)
+        scale = CardDefaults.scale(focusedScale = 1.0f)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = if (isFocused) NuvioColors.Primary else NuvioColors.TextSecondary
-                )
-                
-                Spacer(modifier = Modifier.width(16.dp))
-                
-                Column {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = NuvioColors.TextPrimary
-                    )
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = NuvioColors.TextSecondary
-                    )
-                }
-            }
-            
             Icon(
-                imageVector = Icons.Default.ArrowForward,
+                imageVector = category.icon,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = NuvioColors.TextSecondary
+                modifier = Modifier.size(24.dp),
+                tint = if (isSelected || isFocused) NuvioColors.Secondary else NuvioColors.TextSecondary
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = category.displayName,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (isSelected || isFocused) NuvioColors.TextPrimary else NuvioColors.TextSecondary
             )
         }
     }

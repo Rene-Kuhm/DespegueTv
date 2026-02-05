@@ -88,6 +88,39 @@ fun PluginScreen(
     
     BackHandler { onBackPress() }
     
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(NuvioColors.Background)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 48.dp, vertical = 24.dp)
+        ) {
+            PluginScreenContent(
+                uiState = uiState,
+                repoUrl = repoUrl,
+                onRepoUrlChange = { repoUrl = it },
+                viewModel = viewModel
+            )
+        }
+        
+        // Success/Error Messages
+        MessageOverlay(
+            successMessage = uiState.successMessage,
+            errorMessage = uiState.errorMessage
+        )
+    }
+}
+
+@Composable
+fun PluginScreenContent(
+    uiState: PluginUiState = PluginUiState(),
+    repoUrl: String = "",
+    onRepoUrlChange: (String) -> Unit = {},
+    viewModel: PluginViewModel = hiltViewModel()
+) {
     // Clear messages after delay
     LaunchedEffect(uiState.successMessage) {
         if (uiState.successMessage != null) {
@@ -102,105 +135,89 @@ fun PluginScreen(
             viewModel.onEvent(PluginUiEvent.ClearError)
         }
     }
-    
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(NuvioColors.Background)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 48.dp, vertical = 24.dp)
-        ) {
-            // Header
-            PluginHeader(
-                pluginsEnabled = uiState.pluginsEnabled,
-                onPluginsEnabledChange = { viewModel.onEvent(PluginUiEvent.SetPluginsEnabled(it)) }
-            )
-            
-            Spacer(modifier = Modifier.height(24.dp))
 
-            AddRepositoryInline(
-                url = repoUrl,
-                onUrlChange = { repoUrl = it },
-                onConfirm = {
-                    if (repoUrl.isNotBlank()) {
-                        viewModel.onEvent(PluginUiEvent.AddRepository(repoUrl))
-                        repoUrl = ""
-                    }
-                },
-                isLoading = uiState.isAddingRepo
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Header
+        PluginHeader(
+            pluginsEnabled = uiState.pluginsEnabled,
+            onPluginsEnabledChange = { viewModel.onEvent(PluginUiEvent.SetPluginsEnabled(it)) }
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+
+        AddRepositoryInline(
+            url = repoUrl,
+            onUrlChange = onRepoUrlChange,
+            onConfirm = {
+                if (repoUrl.isNotBlank()) {
+                    viewModel.onEvent(PluginUiEvent.AddRepository(repoUrl))
+                    onRepoUrlChange("")
+                }
+            },
+            isLoading = uiState.isAddingRepo
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Content
+        TvLazyColumn(
+            contentPadding = PaddingValues(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            // Repositories section
+            item {
+                Text(
+                    text = "Repositories (${uiState.repositories.size})",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = NuvioColors.TextPrimary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Content
-            TvLazyColumn(
-                contentPadding = PaddingValues(bottom = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                // Repositories section
+            if (uiState.repositories.isEmpty()) {
                 item {
+                    EmptyState(
+                        message = "No repositories added yet.\nAdd a repository to get started.",
+                        modifier = Modifier.padding(vertical = 24.dp)
+                    )
+                }
+            }
+            
+            items(uiState.repositories, key = { it.id }) { repo ->
+                RepositoryCard(
+                    repository = repo,
+                    onRefresh = { viewModel.onEvent(PluginUiEvent.RefreshRepository(repo.id)) },
+                    onRemove = { viewModel.onEvent(PluginUiEvent.RemoveRepository(repo.id)) },
+                    isLoading = uiState.isLoading
+                )
+            }
+            
+            // Scrapers section
+            if (uiState.scrapers.isNotEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Repositories (${uiState.repositories.size})",
+                        text = "Providers (${uiState.scrapers.size})",
                         style = MaterialTheme.typography.titleLarge,
                         color = NuvioColors.TextPrimary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 
-                if (uiState.repositories.isEmpty()) {
-                    item {
-                        EmptyState(
-                            message = "No repositories added yet.\nAdd a repository to get started.",
-                            modifier = Modifier.padding(vertical = 24.dp)
-                        )
-                    }
-                }
-                
-                items(uiState.repositories, key = { it.id }) { repo ->
-                    RepositoryCard(
-                        repository = repo,
-                        onRefresh = { viewModel.onEvent(PluginUiEvent.RefreshRepository(repo.id)) },
-                        onRemove = { viewModel.onEvent(PluginUiEvent.RemoveRepository(repo.id)) },
-                        isLoading = uiState.isLoading
+                items(uiState.scrapers, key = { it.id }) { scraper ->
+                    ScraperCard(
+                        scraper = scraper,
+                        onToggle = { enabled -> 
+                            viewModel.onEvent(PluginUiEvent.ToggleScraper(scraper.id, enabled)) 
+                        },
+                        onTest = { viewModel.onEvent(PluginUiEvent.TestScraper(scraper.id)) },
+                        isTesting = uiState.isTesting && uiState.testScraperId == scraper.id,
+                        testResults = if (uiState.testScraperId == scraper.id) uiState.testResults else null
                     )
-                }
-                
-                // Scrapers section
-                if (uiState.scrapers.isNotEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Providers (${uiState.scrapers.size})",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = NuvioColors.TextPrimary
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    
-                    items(uiState.scrapers, key = { it.id }) { scraper ->
-                        ScraperCard(
-                            scraper = scraper,
-                            onToggle = { enabled -> 
-                                viewModel.onEvent(PluginUiEvent.ToggleScraper(scraper.id, enabled)) 
-                            },
-                            onTest = { viewModel.onEvent(PluginUiEvent.TestScraper(scraper.id)) },
-                            isTesting = uiState.isTesting && uiState.testScraperId == scraper.id,
-                            testResults = if (uiState.testScraperId == scraper.id) uiState.testResults else null
-                        )
-                    }
                 }
             }
         }
-        
-        // Success/Error Messages
-        MessageOverlay(
-            successMessage = uiState.successMessage,
-            errorMessage = uiState.errorMessage
-        )
     }
 }
 

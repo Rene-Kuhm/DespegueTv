@@ -51,9 +51,6 @@ import com.nuvio.tv.updater.UpdateViewModel
 fun AboutScreen(
     onBackPress: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-    val updateViewModel: UpdateViewModel = hiltViewModel(context as ComponentActivity)
-
     BackHandler { onBackPress() }
 
     Column(
@@ -63,34 +60,53 @@ fun AboutScreen(
             .padding(horizontal = 48.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(48.dp))
+        AboutSettingsContent()
+    }
+}
+
+@Composable
+fun AboutSettingsContent() {
+    val context = LocalContext.current
+    val updateViewModel: UpdateViewModel = hiltViewModel(context as ComponentActivity)
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "About",
+            style = MaterialTheme.typography.headlineMedium,
+            color = NuvioColors.Secondary
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Image(
             painter = painterResource(id = R.drawable.nuvio_text),
             contentDescription = "Nuvio",
             modifier = Modifier
-                .width(200.dp)
-                .height(60.dp),
+                .width(180.dp)
+                .height(50.dp),
             contentScale = ContentScale.Fit
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = "Made with \u2764\uFE0F by Tapframe and friends",
-            style = MaterialTheme.typography.bodyLarge,
-            color = NuvioColors.TextSecondary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Version ${BuildConfig.VERSION_NAME}",
-            style = MaterialTheme.typography.bodyMedium,
+            text = "Made with \u2764\uFE0F by Tapframe and friends",
+            style = MaterialTheme.typography.bodySmall,
             color = NuvioColors.TextSecondary
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Version ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.bodySmall,
+            color = NuvioColors.TextSecondary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Check for updates
         var updateFocused by remember { mutableStateOf(false) }
@@ -99,10 +115,10 @@ fun AboutScreen(
                 updateViewModel.checkForUpdates(force = true, showNoUpdateFeedback = true)
             },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.8f)
                 .onFocusChanged { updateFocused = it.isFocused },
             colors = CardDefaults.colors(
-                containerColor = NuvioColors.BackgroundCard,
+                containerColor = NuvioColors.BackgroundElevated,
                 focusedContainerColor = NuvioColors.FocusBackground
             ),
             border = CardDefaults.border(
@@ -117,18 +133,18 @@ fun AboutScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
                         text = "Check for updates",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         color = NuvioColors.TextPrimary
                     )
                     Text(
-                        text = "Download and install latest release",
+                        text = "Download latest release",
                         style = MaterialTheme.typography.bodySmall,
                         color = NuvioColors.TextSecondary
                     )
@@ -137,13 +153,13 @@ fun AboutScreen(
                 Icon(
                     imageVector = Icons.Default.OpenInNew,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(18.dp),
                     tint = if (updateFocused) NuvioColors.Primary else NuvioColors.TextSecondary
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Privacy Policy
         var isFocused by remember { mutableStateOf(false) }
@@ -154,10 +170,10 @@ fun AboutScreen(
                 context.startActivity(intent)
             },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.8f)
                 .onFocusChanged { isFocused = it.isFocused },
             colors = CardDefaults.colors(
-                containerColor = NuvioColors.BackgroundCard,
+                containerColor = NuvioColors.BackgroundElevated,
                 focusedContainerColor = NuvioColors.FocusBackground
             ),
             border = CardDefaults.border(
@@ -172,14 +188,14 @@ fun AboutScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
                         text = "Privacy Policy",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         color = NuvioColors.TextPrimary
                     )
                     Text(
@@ -192,7 +208,7 @@ fun AboutScreen(
                 Icon(
                     imageVector = Icons.Default.OpenInNew,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(18.dp),
                     tint = if (isFocused) NuvioColors.Primary else NuvioColors.TextSecondary
                 )
             }
@@ -204,7 +220,7 @@ fun AboutScreen(
             text = "v${BuildConfig.VERSION_NAME}",
             style = MaterialTheme.typography.bodySmall,
             color = NuvioColors.TextSecondary.copy(alpha = 0.5f),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
     }
 }

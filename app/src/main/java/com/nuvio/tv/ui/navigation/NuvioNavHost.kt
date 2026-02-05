@@ -260,11 +260,7 @@ fun NuvioNavHost(
 
         composable(Screen.Settings.route) {
             SettingsScreen(
-                onNavigateToPlugins = { navController.navigate(Screen.Plugins.route) },
-                onNavigateToTmdb = { navController.navigate(Screen.TmdbSettings.route) },
-                onNavigateToTheme = { navController.navigate(Screen.ThemeSettings.route) },
-                onNavigateToPlayback = { navController.navigate(Screen.PlaybackSettings.route) },
-                onNavigateToAbout = { navController.navigate(Screen.About.route) }
+                onNavigateToPlugins = { navController.navigate(Screen.Plugins.route) }
             )
         }
 
