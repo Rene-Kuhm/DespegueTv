@@ -96,6 +96,7 @@ fun PlayerScreen(
     val episodesFocusRequester = remember { FocusRequester() }
     val streamsFocusRequester = remember { FocusRequester() }
     val sourceStreamsFocusRequester = remember { FocusRequester() }
+    val skipIntroFocusRequester = remember { FocusRequester() }
 
     BackHandler {
         if (uiState.showSourcesPanel) {
@@ -201,7 +202,16 @@ fun PlayerScreen(
                             if (!uiState.showControls) {
                                 viewModel.onEvent(PlayerEvent.OnToggleControls)
                             } else {
-                                viewModel.hideControls()
+                                val skipVisible = uiState.activeSkipInterval != null && !uiState.skipIntervalDismissed
+                                if (skipVisible) {
+                                    try {
+                                        skipIntroFocusRequester.requestFocus()
+                                    } catch (_: Exception) {
+                                        // Focus requester may not be ready yet
+                                    }
+                                } else {
+                                    viewModel.hideControls()
+                                }
                             }
                             true
                         }
@@ -320,6 +330,7 @@ fun PlayerScreen(
             controlsVisible = uiState.showControls,
             onSkip = { viewModel.onEvent(PlayerEvent.OnSkipIntro) },
             onDismiss = { viewModel.onEvent(PlayerEvent.OnDismissSkipIntro) },
+            focusRequester = skipIntroFocusRequester,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 32.dp, bottom = if (uiState.showControls) 120.dp else 32.dp)

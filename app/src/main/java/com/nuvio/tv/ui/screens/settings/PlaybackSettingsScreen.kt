@@ -959,6 +959,12 @@ private fun LanguageSelectionDialog(
     onLanguageSelected: (String?) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+    
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
         Card(
             onClick = { },
@@ -990,7 +996,8 @@ private fun LanguageSelectionDialog(
                                 name = "None",
                                 code = null,
                                 isSelected = selectedLanguage == null,
-                                onClick = { onLanguageSelected(null) }
+                                onClick = { onLanguageSelected(null) },
+                                modifier = Modifier.focusRequester(focusRequester)
                             )
                         }
                     }
@@ -1001,7 +1008,12 @@ private fun LanguageSelectionDialog(
                             name = language.name,
                             code = language.code,
                             isSelected = selectedLanguage == language.code,
-                            onClick = { onLanguageSelected(language.code) }
+                            onClick = { onLanguageSelected(language.code) },
+                            modifier = if (!showNoneOption && index == 0) {
+                                Modifier.focusRequester(focusRequester)
+                            } else {
+                                Modifier
+                            }
                         )
                     }
                 }
@@ -1015,7 +1027,8 @@ private fun LanguageOptionItem(
     name: String,
     code: String?,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var isFocused by remember { mutableStateOf(false) }
     
@@ -1023,6 +1036,7 @@ private fun LanguageOptionItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
+            .then(modifier)
             .onFocusChanged { isFocused = it.isFocused },
         colors = CardDefaults.colors(
             containerColor = if (isSelected) NuvioColors.Primary.copy(alpha = 0.2f) else NuvioColors.BackgroundElevated,

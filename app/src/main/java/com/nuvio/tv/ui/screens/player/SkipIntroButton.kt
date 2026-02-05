@@ -52,11 +52,13 @@ fun SkipIntroButton(
     controlsVisible: Boolean,
     onSkip: () -> Unit,
     onDismiss: () -> Unit,
+    focusRequester: FocusRequester? = null,
     modifier: Modifier = Modifier
 ) {
     val shouldShow = interval != null && !dismissed
     var autoHidden by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
+    val internalFocusRequester = remember { FocusRequester() }
+    val activeFocusRequester = focusRequester ?: internalFocusRequester
     var isFocused by remember { mutableStateOf(false) }
 
     // Reset auto-hide when interval changes
@@ -86,7 +88,7 @@ fun SkipIntroButton(
         if (isVisible && !controlsVisible) {
             delay(350) // Wait for animation
             try {
-                focusRequester.requestFocus()
+                activeFocusRequester.requestFocus()
             } catch (_: Exception) {}
         }
     }
@@ -100,7 +102,7 @@ fun SkipIntroButton(
         Card(
             onClick = onSkip,
             modifier = Modifier
-                .focusRequester(focusRequester)
+                .focusRequester(activeFocusRequester)
                 .onFocusChanged { isFocused = it.isFocused },
             colors = CardDefaults.colors(
                 containerColor = Color(0xFF1E1E1E).copy(alpha = 0.85f),

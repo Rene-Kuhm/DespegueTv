@@ -22,10 +22,15 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.foundation.lazy.list.TvLazyColumn
@@ -45,6 +50,8 @@ fun AddonManagerScreen(
     viewModel: AddonManagerViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = Modifier
@@ -87,14 +94,26 @@ fun AddonManagerScreen(
                             TextField(
                                 value = uiState.installUrl,
                                 onValueChange = viewModel::onInstallUrlChange,
-                                placeholder = { Text(text = "https://example.com") },
+                                placeholder = { Text(text = "https://example.com", color = NuvioColors.TextTertiary) },
                                 modifier = Modifier.weight(1f),
+                                singleLine = true,
                                 shape = RoundedCornerShape(12.dp),
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        viewModel.installAddon()
+                                        keyboardController?.hide()
+                                        focusManager.clearFocus(force = true)
+                                    }
+                                ),
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = NuvioColors.BackgroundElevated,
                                     unfocusedContainerColor = NuvioColors.BackgroundElevated,
                                     focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                                    unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+                                    unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                                    focusedTextColor = NuvioColors.TextPrimary,
+                                    unfocusedTextColor = NuvioColors.TextPrimary,
+                                    cursorColor = NuvioColors.Primary
                                 )
                             )
                             Button(
