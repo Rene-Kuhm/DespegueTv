@@ -1,0 +1,95 @@
+<div align="center">
+
+  <img src="assets/nuviotext.png" alt="Nuvio" width="300" />
+  <br />
+  <br />
+
+  [![Contributors][contributors-shield]][contributors-url]
+  [![Forks][forks-shield]][forks-url]
+  [![Stargazers][stars-shield]][stars-url]
+  [![Issues][issues-shield]][issues-url]
+  [![License][license-shield]][license-url]
+
+  <p>
+    A modern media streaming app for Android TV powered by the Stremio addon ecosystem.
+    <br />
+    Stremio Addon ecosystem • Android TV optimized • Seamless streaming experience
+    <br />
+    <strong>⚠️ Early Beta</strong>
+  </p>
+
+</div>
+
+## About
+
+NuvioTV is a modern streaming application designed specifically for Android TV. It provides access to the Stremio addon ecosystem, enabling users to discover and stream media through a flexible network of community-maintained extensions. Built with Kotlin and optimized for the TV viewing experience.
+
+## Installation
+
+### Android TV
+
+Download the latest APK from [GitHub Releases](https://github.com/tapframe/NuvioTV/releases/latest) and install on your Android TV device.
+
+## Development
+
+### Prerequisites
+
+- Android Studio (latest version)
+- JDK 11+
+- Android SDK (API 29+)
+- Gradle 8.0+
+
+### Setup
+
+```bash
+git clone https://github.com/tapframe/NuvioTV.git
+cd NuvioTV
+./gradlew build
+```
+
+### Running on Emulator or Device
+
+```bash
+# Debug build
+./gradlew installDebug
+
+# Run on connected device
+adb shell am start -n com.nuvio.tv/.MainActivity
+```
+
+## Legal & DMCA
+
+NuvioTV functions solely as a client-side interface for browsing metadata and playing media files provided by user-installed extensions. It does not host, store, or distribute any media content.
+
+For comprehensive legal information, including our full disclaimer, third-party extension policy, and DMCA/Copyright information, please visit our **[Legal & Disclaimer Page](https://tapframe.github.io/NuvioTV/#legal)**.
+
+## Built With
+
+* Kotlin
+* Jetpack Compose & TV Material3
+* ExoPlayer / Media3
+* Hilt (Dependency Injection)
+* Retrofit (Networking)
+* Gradle
+
+## Star History
+
+<a href="https://www.star-history.com/#tapframe/NuvioTV&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=tapframe/NuvioTV&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=tapframe/NuvioTV&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tapframe/NuvioTV&type=date&legend=top-left" />
+ </picture>
+</a>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[contributors-shield]: https://img.shields.io/github/contributors/tapframe/NuvioTV.svg?style=for-the-badge
+[contributors-url]: https://github.com/tapframe/NuvioTV/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/tapframe/NuvioTV.svg?style=for-the-badge
+[forks-url]: https://github.com/tapframe/NuvioTV/network/members
+[stars-shield]: https://img.shields.io/github/stars/tapframe/NuvioTV.svg?style=for-the-badge
+[stars-url]: https://github.com/tapframe/NuvioTV/stargazers
+[issues-shield]: https://img.shields.io/github/issues/tapframe/NuvioTV.svg?style=for-the-badge
+[issues-url]: https://github.com/tapframe/NuvioTV/issues
+[license-shield]: https://img.shields.io/github/license/tapframe/NuvioTV.svg?style=for-the-badge
+[license-url]: http://www.gnu.org/licenses/gpl-3.0.en.html
