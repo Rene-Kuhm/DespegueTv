@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -48,13 +52,15 @@ fun HeroCarousel(
     if (items.isEmpty()) return
 
     val carouselState = remember { CarouselState() }
+    var isFocused by remember { mutableStateOf(false) }
 
     Carousel(
         itemCount = items.size,
         carouselState = carouselState,
         modifier = modifier
             .fillMaxWidth()
-            .height(400.dp),
+            .height(400.dp)
+            .onFocusChanged { isFocused = it.hasFocus },
         carouselIndicator = {
             CarouselDefaults.IndicatorRow(
                 itemCount = items.size,
@@ -63,14 +69,24 @@ fun HeroCarousel(
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp)
             ) { isActive ->
+                val dotWidth = when {
+                    isFocused && isActive -> 32.dp
+                    isActive -> 24.dp
+                    else -> 12.dp
+                }
+                val dotHeight = if (isFocused && isActive) 6.dp else 4.dp
                 Box(
                     modifier = Modifier
-                        .width(if (isActive) 24.dp else 12.dp)
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
+                        .width(dotWidth)
+                        .height(dotHeight)
+                        .clip(RoundedCornerShape(3.dp))
                         .background(
-                            if (isActive) NuvioColors.Primary
-                            else Color.White.copy(alpha = 0.3f)
+                            when {
+                                isFocused && isActive -> NuvioColors.FocusRing
+                                isFocused -> NuvioColors.FocusRing.copy(alpha = 0.4f)
+                                isActive -> NuvioColors.Primary
+                                else -> Color.White.copy(alpha = 0.3f)
+                            }
                         )
                 )
             }
