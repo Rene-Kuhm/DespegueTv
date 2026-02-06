@@ -10,13 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -24,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
@@ -93,7 +86,7 @@ fun MetaDetailsScreen(
                 if (keyEvent.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) {
                     viewModel.onEvent(MetaDetailsEvent.OnUserInteraction)
                 }
-                false // Don't consume — let normal focus/navigation proceed
+                false
             }
     ) {
         when {
@@ -108,8 +101,12 @@ fun MetaDetailsScreen(
             }
             uiState.meta != null -> {
                 val meta = uiState.meta!!
-                val genresString = meta.genres.takeIf { it.isNotEmpty() }?.joinToString(" • ")
-                val yearString = meta.releaseInfo?.split("-")?.firstOrNull() ?: meta.releaseInfo
+                val genresString = remember(meta.genres) {
+                    meta.genres.takeIf { it.isNotEmpty() }?.joinToString(" • ")
+                }
+                val yearString = remember(meta.releaseInfo) {
+                    meta.releaseInfo?.split("-")?.firstOrNull() ?: meta.releaseInfo
+                }
 
                 MetaDetailsContent(
                     meta = meta,
@@ -121,7 +118,6 @@ fun MetaDetailsScreen(
                     episodeProgressMap = uiState.episodeProgressMap,
                     onSeasonSelected = { viewModel.onEvent(MetaDetailsEvent.OnSeasonSelected(it)) },
                     onEpisodeClick = { video ->
-                        // Navigate to stream screen for episode
                         onPlayClick(
                             video.id,
                             meta.type.toApiString(),
@@ -139,7 +135,6 @@ fun MetaDetailsScreen(
                         )
                     },
                     onPlayClick = { videoId ->
-                        // Navigate to stream screen for movie
                         onPlayClick(
                             videoId,
                             meta.type.toApiString(),
@@ -185,8 +180,10 @@ private fun MetaDetailsContent(
     isTrailerPlaying: Boolean,
     onTrailerEnded: () -> Unit
 ) {
-    val isSeries = meta.type == ContentType.SERIES || meta.videos.isNotEmpty()
-    val nextEpisode = episodesForSeason.firstOrNull()
+    val isSeries = remember(meta.type, meta.videos) {
+        meta.type == ContentType.SERIES || meta.videos.isNotEmpty()
+    }
+    val nextEpisode = remember(episodesForSeason) { episodesForSeason.firstOrNull() }
     val heroVideo = remember(meta.videos, nextToWatch, nextEpisode, isSeries) {
         if (!isSeries) return@remember null
         val byId = nextToWatch?.nextVideoId?.let { id ->
@@ -210,36 +207,55 @@ private fun MetaDetailsContent(
         }
     }
 
-    // --- Trailer ExoPlayer ---
-    val context = LocalContext.current
-    val trailerPlayer = remember {
-        ExoPlayer.Builder(context)
-            .build()
-            .apply {
-                repeatMode = Player.REPEAT_MODE_OFF
-                volume = 1f
-            }
+    // Pre-compute cast members to avoid recomputation in lazy scope
+    val castMembersToShow = remember(meta.castMembers, meta.cast) {
+        if (meta.castMembers.isNotEmpty()) {
+            meta.castMembers
+        } else {
+            meta.cast.map { name -> MetaCastMember(name = name) }
+        }
     }
 
-    DisposableEffect(Unit) {
+    // --- Trailer ExoPlayer (deferred: only create when we have a URL) ---
+    val context = LocalContext.current
+    val trailerPlayer = remember(trailerUrl) {
+        if (trailerUrl != null) {
+            ExoPlayer.Builder(context)
+                .build()
+                .apply {
+                    repeatMode = Player.REPEAT_MODE_OFF
+                    volume = 1f
+                }
+        } else {
+            null
+        }
+    }
+
+    // Full cleanup: stop, clear media, release
+    DisposableEffect(trailerPlayer) {
         onDispose {
-            trailerPlayer.release()
+            trailerPlayer?.stop()
+            trailerPlayer?.clearMediaItems()
+            trailerPlayer?.release()
         }
     }
 
     // Load and play/stop trailer based on state
     LaunchedEffect(isTrailerPlaying, trailerUrl) {
+        val player = trailerPlayer ?: return@LaunchedEffect
         if (isTrailerPlaying && trailerUrl != null) {
-            trailerPlayer.setMediaItem(MediaItem.fromUri(trailerUrl))
-            trailerPlayer.prepare()
-            trailerPlayer.playWhenReady = true
+            player.setMediaItem(MediaItem.fromUri(trailerUrl))
+            player.prepare()
+            player.playWhenReady = true
         } else {
-            trailerPlayer.stop()
+            player.stop()
+            player.clearMediaItems()
         }
     }
 
     // Listen for trailer ending
     DisposableEffect(trailerPlayer) {
+        val player = trailerPlayer ?: return@DisposableEffect onDispose {}
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
@@ -247,9 +263,9 @@ private fun MetaDetailsContent(
                 }
             }
         }
-        trailerPlayer.addListener(listener)
+        player.addListener(listener)
         onDispose {
-            trailerPlayer.removeListener(listener)
+            player.removeListener(listener)
         }
     }
 
@@ -259,6 +275,47 @@ private fun MetaDetailsContent(
         animationSpec = tween(durationMillis = 800),
         label = "backdropFade"
     )
+
+    val backgroundColor = NuvioColors.Background
+
+    // Pre-compute gradient brushes once
+    val leftGradient = remember(backgroundColor) {
+        Brush.horizontalGradient(
+            colorStops = arrayOf(
+                0.0f to backgroundColor,
+                0.20f to backgroundColor.copy(alpha = 0.95f),
+                0.35f to backgroundColor.copy(alpha = 0.8f),
+                0.45f to backgroundColor.copy(alpha = 0.6f),
+                0.55f to backgroundColor.copy(alpha = 0.4f),
+                0.65f to backgroundColor.copy(alpha = 0.2f),
+                0.75f to Color.Transparent,
+                1.0f to Color.Transparent
+            )
+        )
+    }
+    val bottomGradient = remember(backgroundColor) {
+        Brush.verticalGradient(
+            colorStops = arrayOf(
+                0.0f to Color.Transparent,
+                0.5f to Color.Transparent,
+                0.7f to backgroundColor.copy(alpha = 0.5f),
+                0.85f to backgroundColor.copy(alpha = 0.8f),
+                1.0f to backgroundColor
+            )
+        )
+    }
+    val dimColor = remember(backgroundColor) { backgroundColor.copy(alpha = 0.08f) }
+
+    // Stable hero play callback
+    val heroPlayClick = remember(heroVideo, meta.id) {
+        {
+            if (heroVideo != null) {
+                onEpisodeClick(heroVideo)
+            } else {
+                onPlayClick(meta.id)
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Sticky background — backdrop or trailer
@@ -277,29 +334,31 @@ private fun MetaDetailsContent(
             )
 
             // Trailer video (fades in when trailer plays)
-            AnimatedVisibility(
-                visible = isTrailerPlaying,
-                enter = fadeIn(animationSpec = tween(800)),
-                exit = fadeOut(animationSpec = tween(500))
-            ) {
-                AndroidView(
-                    factory = { ctx ->
-                        PlayerView(ctx).apply {
-                            player = trailerPlayer
-                            useController = false
-                            keepScreenOn = true
-                            setShowBuffering(PlayerView.SHOW_BUFFERING_NEVER)
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
+            if (trailerPlayer != null) {
+                AnimatedVisibility(
+                    visible = isTrailerPlaying,
+                    enter = fadeIn(animationSpec = tween(800)),
+                    exit = fadeOut(animationSpec = tween(500))
+                ) {
+                    AndroidView(
+                        factory = { ctx ->
+                            PlayerView(ctx).apply {
+                                player = trailerPlayer
+                                useController = false
+                                keepScreenOn = true
+                                setShowBuffering(PlayerView.SHOW_BUFFERING_NEVER)
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             // Light global dim so text remains readable
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(NuvioColors.Background.copy(alpha = 0.08f))
+                    .background(dimColor)
             )
 
             // Left side gradient fade for text readability (fades out during trailer)
@@ -312,20 +371,7 @@ private fun MetaDetailsContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer { alpha = gradientAlpha }
-                    .background(
-                        Brush.horizontalGradient(
-                            colorStops = arrayOf(
-                                0.0f to NuvioColors.Background,
-                                0.20f to NuvioColors.Background.copy(alpha = 0.95f),
-                                0.35f to NuvioColors.Background.copy(alpha = 0.8f),
-                                0.45f to NuvioColors.Background.copy(alpha = 0.6f),
-                                0.55f to NuvioColors.Background.copy(alpha = 0.4f),
-                                0.65f to NuvioColors.Background.copy(alpha = 0.2f),
-                                0.75f to Color.Transparent,
-                                1.0f to Color.Transparent
-                            )
-                        )
-                    )
+                    .background(leftGradient)
             )
 
             // Bottom gradient when scrolled past hero
@@ -333,17 +379,7 @@ private fun MetaDetailsContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colorStops = arrayOf(
-                                    0.0f to Color.Transparent,
-                                    0.5f to Color.Transparent,
-                                    0.7f to NuvioColors.Background.copy(alpha = 0.5f),
-                                    0.85f to NuvioColors.Background.copy(alpha = 0.8f),
-                                    1.0f to NuvioColors.Background
-                                )
-                            )
-                        )
+                        .background(bottomGradient)
                 )
             }
         }
@@ -354,18 +390,12 @@ private fun MetaDetailsContent(
             state = listState
         ) {
             // Hero as first item in the lazy column
-            item {
+            item(key = "hero") {
                 HeroContentSection(
                     meta = meta,
                     nextEpisode = nextEpisode,
                     nextToWatch = nextToWatch,
-                    onPlayClick = {
-                        if (heroVideo != null) {
-                            onEpisodeClick(heroVideo)
-                        } else {
-                            onPlayClick(meta.id)
-                        }
-                    },
+                    onPlayClick = heroPlayClick,
                     isInLibrary = isInLibrary,
                     onToggleLibrary = onToggleLibrary,
                     isTrailerPlaying = isTrailerPlaying
@@ -374,7 +404,7 @@ private fun MetaDetailsContent(
 
             // Season tabs and episodes for series
             if (isSeries && seasons.isNotEmpty()) {
-                item {
+                item(key = "season_tabs") {
                     SeasonTabs(
                         seasons = seasons,
                         selectedSeason = selectedSeason,
@@ -382,7 +412,7 @@ private fun MetaDetailsContent(
                         selectedTabFocusRequester = selectedSeasonFocusRequester
                     )
                 }
-                item {
+                item(key = "episodes_$selectedSeason") {
                     EpisodesRow(
                         episodes = episodesForSeason,
                         episodeProgressMap = episodeProgressMap,
@@ -393,35 +423,29 @@ private fun MetaDetailsContent(
             }
 
             // Cast section below episodes
-                val castMembersToShow = if (meta.castMembers.isNotEmpty()) {
-                    meta.castMembers
-                } else {
-                    meta.cast.map { name -> MetaCastMember(name = name) }
-                }
-
-                if (castMembersToShow.isNotEmpty()) {
-                item {
-                        CastSection(cast = castMembersToShow)
+            if (castMembersToShow.isNotEmpty()) {
+                item(key = "cast") {
+                    CastSection(cast = castMembersToShow)
                 }
             }
 
-                if (meta.productionCompanies.isNotEmpty()) {
-                    item {
-                        CompanyLogosSection(
-                            title = "Production",
-                            companies = meta.productionCompanies
-                        )
-                    }
+            if (meta.productionCompanies.isNotEmpty()) {
+                item(key = "production") {
+                    CompanyLogosSection(
+                        title = "Production",
+                        companies = meta.productionCompanies
+                    )
                 }
+            }
 
-                if (meta.networks.isNotEmpty()) {
-                    item {
-                        CompanyLogosSection(
-                            title = "Network",
-                            companies = meta.networks
-                        )
-                    }
+            if (meta.networks.isNotEmpty()) {
+                item(key = "networks") {
+                    CompanyLogosSection(
+                        title = "Network",
+                        companies = meta.networks
+                    )
                 }
+            }
         }
     }
 }

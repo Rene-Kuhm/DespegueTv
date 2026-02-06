@@ -298,6 +298,12 @@ private fun ActionIconButton(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun MetaInfoRow(meta: Meta) {
+    val genresText = remember(meta.genres) { meta.genres.joinToString(" • ") }
+    val runtimeText = remember(meta.runtime) { meta.runtime?.let { formatRuntime(it) } }
+    val yearText = remember(meta.releaseInfo) {
+        meta.releaseInfo?.split("-")?.firstOrNull() ?: meta.releaseInfo
+    }
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // Primary row: Genres, Runtime, Release, Ratings
         Row(
@@ -307,7 +313,7 @@ private fun MetaInfoRow(meta: Meta) {
             // Show all genres
             if (meta.genres.isNotEmpty()) {
                 Text(
-                    text = meta.genres.joinToString(" • "),
+                    text = genresText,
                     style = MaterialTheme.typography.labelLarge,
                     color = NuvioTheme.extendedColors.textSecondary
                 )
@@ -315,18 +321,16 @@ private fun MetaInfoRow(meta: Meta) {
             }
 
             // Runtime
-            meta.runtime?.let { runtime ->
+            runtimeText?.let { text ->
                 Text(
-                    text = formatRuntime(runtime),
+                    text = text,
                     style = MaterialTheme.typography.labelLarge,
                     color = NuvioTheme.extendedColors.textSecondary
                 )
                 MetaInfoDivider()
             }
 
-            meta.releaseInfo?.let { releaseInfo ->
-                // Extract year from release info (format: YYYY-MM-DD or just YYYY)
-                val year = releaseInfo.split("-").firstOrNull() ?: releaseInfo
+            yearText?.let { year ->
                 Text(
                     text = year,
                     style = MaterialTheme.typography.labelLarge,
@@ -341,17 +345,21 @@ private fun MetaInfoRow(meta: Meta) {
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val context = LocalContext.current
-                    AsyncImage(
-                        model = ImageRequest.Builder(context)
+                    val imdbModel = remember {
+                        ImageRequest.Builder(context)
                             .data(com.nuvio.tv.R.raw.imdb_logo_2016)
                             .decoderFactory(SvgDecoder.Factory())
-                            .build(),
+                            .build()
+                    }
+                    AsyncImage(
+                        model = imdbModel,
                         contentDescription = "Rating",
                         modifier = Modifier.size(30.dp),
                         contentScale = ContentScale.Fit
                     )
+                    val ratingText = remember(rating) { String.format("%.1f", rating) }
                     Text(
-                        text = String.format("%.1f", rating),
+                        text = ratingText,
                         style = MaterialTheme.typography.labelLarge,
                         color = NuvioTheme.extendedColors.textSecondary
                     )
