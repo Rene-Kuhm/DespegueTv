@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio</string>
+    <string name="app_name">Despegue</string>
     <string name="type_movie">Filme</string>
     <string name="type_series">Série</string>
     <string name="type_unknown">Desconhecido</string>
@@ -64,7 +64,7 @@
     <!-- HomeScreen -->
     <string name="home_no_addons">Nenhum addon instalado. Adiciona um para começar.</string>
     <string name="home_no_catalog_addons">Nenhum addon de catálogo instalado. Instala um para veres conteúdo.</string>
-    <string name="auth_notice_nuvio_logged_out">A tua sessão no Nuvio foi terminada. Por favor, inicia sessão novamente.</string>
+    <string name="auth_notice_despegue_logged_out">A tua sessão no Despegue foi terminada. Por favor, inicia sessão novamente.</string>
     <string name="auth_notice_trakt_logged_out">A tua sessão no Trakt foi terminada. Por favor, volta a ligar a conta.</string>
     <string name="error_generic">Ocorreu um erro</string>
     
@@ -310,8 +310,8 @@
     <string name="advanced_section_cache">Cache</string>
     <string name="advanced_fast_horizontal_navigation">Navegação Horizontal Rápida</string>
     <string name="advanced_fast_horizontal_navigation_subtitle">Aumenta a velocidade de repetição do comando nas linhas mantendo o limite de repetição ativo.</string>
-    <string name="advanced_nuvio_focus_scroll">Scrolling de Foco Nuvio</string>
-    <string name="advanced_nuvio_focus_scroll_subtitle">Utiliza a animação de posicionamento e scroll de foco global personalizada do Nuvio.</string>
+    <string name="advanced_despegue_focus_scroll">Scrolling de Foco Despegue</string>
+    <string name="advanced_despegue_focus_scroll_subtitle">Utiliza a animação de posicionamento e scroll de foco global personalizada do Despegue.</string>
     <string name="advanced_memory_only_vertical_scroll">Scrolling Vertical Apenas em Memória</string>
     <string name="advanced_memory_only_vertical_scroll_subtitle">Ignora pedidos de imagem ao disco e rede durante o scrolling vertical nas linhas do início.</string>
     <string name="advanced_clear_cw_cache">Limpar Cache de \"Continuar a Ver\"</string>
@@ -347,12 +347,12 @@
 
     <!-- SupportersContributorsScreen -->
     <string name="supporters_contributors_title">Apoiantes e Colaboradores</string>
-    <string name="supporters_contributors_subtitle">As pessoas que apoiam o Nuvio e os colaboradores que o constroem para TV e dispositivos móveis.</string>
+    <string name="supporters_contributors_subtitle">As pessoas que apoiam o Despegue e os colaboradores que o constroem para TV e dispositivos móveis.</string>
     <string name="supporters_contributors_supporters_copy">Os apoiantes e doadores ajudam a manter o projeto em movimento, a financiar a infraestrutura e a abrir espaço para funcionalidades ambiciosas.</string>
-    <string name="supporters_contributors_donate_copy">O Nuvio continuará a ser gratuito e de código aberto. Se quiseres apoiar o projeto, podes ajudar a cobrir o tempo e a infraestrutura por trás dele.</string>
-    <string name="supporters_contributors_donate_button">Doar ao Nuvio</string>
+    <string name="supporters_contributors_donate_copy">O Despegue continuará a ser gratuito e de código aberto. Se quiseres apoiar o projeto, podes ajudar a cobrir o tempo e a infraestrutura por trás dele.</string>
+    <string name="supporters_contributors_donate_button">Doar ao Despegue</string>
     <string name="supporters_contributors_qr_title">Faz scan para doar</string>
-    <string name="supporters_contributors_qr_subtitle">Abre o link no teu telemóvel e apoia o Nuvio através do Ko-fi.</string>
+    <string name="supporters_contributors_qr_subtitle">Abre o link no teu telemóvel e apoia o Despegue através do Ko-fi.</string>
     <string name="supporters_contributors_qr_hint">Aponta a tua câmara para o código QR ou utiliza o botão abaixo.</string>
     <string name="supporters_contributors_back_button">Voltar aos detalhes</string>
     <string name="supporters_tab">Apoiantes</string>
@@ -420,8 +420,8 @@
     <string name="playback_player_ask_desc">Escolher o reprodutor de cada vez</string>
     <string name="playback_player_auto">Auto (Melhor para o conteúdo)</string>
     <string name="playback_player_auto_desc">ExoPlayer para Filmes e Séries · MPV para Anime</string>
-    <string name="playback_engine_exoplayer_desc">Melhor compatibilidade com as funcionalidades atuais do Nuvio.</string>
-    <string name="playback_engine_mvplayer_desc">Utiliza libmpv com os controlos OSD do Nuvio. Experimental.</string>
+    <string name="playback_engine_exoplayer_desc">Melhor compatibilidade com as funcionalidades atuais do Despegue.</string>
+    <string name="playback_engine_mvplayer_desc">Utiliza libmpv com os controlos OSD do Despegue. Experimental.</string>
 
     <!-- PlaybackAudioSettings -->
     <string name="audio_trailer_section">Trailer</string>
@@ -739,21 +739,21 @@
     <string name="trakt_watch_progress_title">Progresso de Visualização</string>
     <string name="trakt_watch_progress_subtitle">Escolhe qual a fonte de progresso que controla o retomar e o continuar a ver</string>
     <string name="trakt_watch_progress_dialog_title">Progresso de Visualização</string>
-    <string name="trakt_watch_progress_dialog_subtitle">Escolhe se o retomar e o continuar a ver devem usar o Trakt ou o Nuvio Sync, enquanto o scrobbling do Trakt permanece ativo.</string>
+    <string name="trakt_watch_progress_dialog_subtitle">Escolhe se o retomar e o continuar a ver devem usar o Trakt ou o Despegue Sync, enquanto o scrobbling do Trakt permanece ativo.</string>
     <string name="trakt_watch_progress_source_trakt">Trakt</string>
-    <string name="trakt_watch_progress_source_nuvio">Nuvio Sync</string>
+    <string name="trakt_watch_progress_source_despegue">Despegue Sync</string>
     <string name="trakt_library_source_title">Fonte da Biblioteca</string>
     <string name="trakt_library_source_subtitle">Escolhe qual a biblioteca a usar para guardar e ver a tua coleção</string>
     <string name="trakt_library_source_dialog_title">Fonte da Biblioteca</string>
     <string name="trakt_library_source_dialog_subtitle">Escolhe onde guardar e gerir os itens da tua biblioteca</string>
     <string name="trakt_library_source_trakt">Trakt</string>
-    <string name="trakt_library_source_nuvio">Biblioteca Nuvio</string>
+    <string name="trakt_library_source_despegue">Biblioteca Despegue</string>
     <string name="trakt_library_source_trakt_selected">Biblioteca Trakt selecionada</string>
-    <string name="trakt_library_source_nuvio_selected">Biblioteca Nuvio selecionada</string>
+    <string name="trakt_library_source_despegue_selected">Biblioteca Despegue selecionada</string>
     <string name="trakt_setting_on">Ligado</string>
     <string name="trakt_setting_off">Desligado</string>
     <string name="trakt_watch_progress_trakt_selected">Fonte de progresso definida para Trakt</string>
-    <string name="trakt_watch_progress_nuvio_selected">Fonte de progresso definida para Nuvio Sync</string>
+    <string name="trakt_watch_progress_despegue_selected">Fonte de progresso definida para Despegue Sync</string>
     <string name="trakt_continue_watching_window">Janela de \"Continuar a Ver\"</string>
     <string name="trakt_continue_watching_subtitle">Histórico do Trakt considerado para o continuar a ver</string>
     <string name="trakt_unaired_next_up">Próximos Episódios Não Emitidos</string>
@@ -775,7 +775,7 @@
     <string name="trakt_stat_watched_hours">Horas Visualizadas</string>
     <string name="trakt_disconnect">Desligar</string>
     <string name="trakt_disconnect_title">Desligar Trakt?</string>
-    <string name="trakt_disconnect_subtitle">Isto irá desligar a tua conta Trakt do Nuvio.</string>
+    <string name="trakt_disconnect_subtitle">Isto irá desligar a tua conta Trakt do Despegue.</string>
     <string name="trakt_login">Login</string>
     <string name="trakt_retry">Tentar novamente</string>
     <string name="trakt_back">Voltar</string>
@@ -883,7 +883,7 @@
     <string name="profile_pin_overlay_set_support">Este PIN será solicitado antes de abrir este perfil.</string>
     <string name="profile_pin_overlay_confirm_support">Introduz novamente os mesmos 4 dígitos para concluir a configuração.</string>
     <string name="profile_pin_overlay_mismatch">Os PINs não coincidem. Introduz novamente o novo PIN.</string>
-    <string name="profile_pin_overlay_forgot_hint">Esqueceste-te do PIN? Repõe-no através da tua conta Nuvio no site oficial.</string>
+    <string name="profile_pin_overlay_forgot_hint">Esqueceste-te do PIN? Repõe-no através da tua conta Despegue no site oficial.</string>
     <string name="profile_pin_overlay_back_hint">Prime \"voltar\" para cancelar</string>
 
 
@@ -936,7 +936,7 @@
     <string name="stream_type_torrent">Torrent</string>
     <string name="stream_type_youtube">YouTube</string>
     <string name="p2p_consent_title">Transmissão P2P</string>
-    <string name="p2p_consent_body">Esta transmissão utiliza tecnologia peer-to-peer (P2P). Ao ativar o P2P, reconheces e concordas que:\n\n\u2022 O teu endereço IP estará visível para outros pares na rede\n\u2022 És o único responsável pelo conteúdo a que acedes\n\u2022 Confirmas que tens o direito legal de transmitir este conteúdo na tua jurisdição\n\u2022 O Nuvio não aloja, distribui ou controla qualquer conteúdo P2P\n\u2022 O Nuvio não assume qualquer responsabilidade por consequências legais resultantes do teu uso de transmissões P2P\n\nUtilizas esta funcionalidade inteiramente por tua conta e risco. O P2P pode ser desativado a qualquer momento nas Definições.</string>
+    <string name="p2p_consent_body">Esta transmissão utiliza tecnologia peer-to-peer (P2P). Ao ativar o P2P, reconheces e concordas que:\n\n\u2022 O teu endereço IP estará visível para outros pares na rede\n\u2022 És o único responsável pelo conteúdo a que acedes\n\u2022 Confirmas que tens o direito legal de transmitir este conteúdo na tua jurisdição\n\u2022 O Despegue não aloja, distribui ou controla qualquer conteúdo P2P\n\u2022 O Despegue não assume qualquer responsabilidade por consequências legais resultantes do teu uso de transmissões P2P\n\nUtilizas esta funcionalidade inteiramente por tua conta e risco. O P2P pode ser desativado a qualquer momento nas Definições.</string>
     <string name="p2p_consent_enable">Ativar P2P</string>
     <string name="p2p_consent_cancel">Cancelar</string>
     <string name="settings_p2p_title">Transmissão P2P</string>
@@ -1181,7 +1181,7 @@
     <string name="library_delete_subtitle">Isto remove a lista e todos os seus itens do Trakt.</string>
     <string name="library_delete_confirm">Eliminar</string>
     <string name="library_source_local">LOCAL</string>
-    <string name="library_source_nuvio">NUVIO</string>
+    <string name="library_source_despegue">DESPEGUE</string>
     <string name="library_source_trakt">TRAKT</string>
     <string name="library_syncing_library">A sincronizar a biblioteca\u2026</string>
     <string name="library_type_all">Tudo</string>
@@ -1301,7 +1301,7 @@
     <string name="catalog_see_all_empty_subtitle">Tenta um catálogo diferente ou volta a verificar mais tarde</string>
 
     <!-- LayoutSelectionScreen -->
-    <string name="layout_selection_welcome">Bem-vindo ao Nuvio</string>
+    <string name="layout_selection_welcome">Bem-vindo ao Despegue</string>
     <string name="layout_selection_subtitle">Escolhe o layout do teu ecrã inicial</string>
     <string name="layout_selection_continue">Continuar</string>
 
@@ -1313,7 +1313,7 @@
     <string name="update_unknown_sources">Permite a instalação de fontes desconhecidas para continuar.</string>
     <!-- AccountScreen -->
     <string name="account_title">Conta</string>
-    <string name="account_sign_in_description">Inicia sessão para sincronizar a tua biblioteca, progresso de visualização, addons e plugins entre dispositivos. A sincronização da biblioteca utiliza o Nuvio Sync quando o Trakt não está ligado, e o progresso de visualização pode utilizar o Trakt ou o Nuvio Sync.</string>
+    <string name="account_sign_in_description">Inicia sessão para sincronizar a tua biblioteca, progresso de visualização, addons e plugins entre dispositivos. A sincronização da biblioteca utiliza o Despegue Sync quando o Trakt não está ligado, e o progresso de visualização pode utilizar o Trakt ou o Despegue Sync.</string>
     <string name="account_sync_code_title">Código de Sincronização</string>
     <string name="account_sync_code_description">Sincroniza entre dispositivos sem criar uma conta.</string>
     <string name="account_linked_devices">Dispositivos Associados (%1$d)</string>
@@ -1487,7 +1487,7 @@
     <string name="cd_preview">Pré-visualização</string>
     <string name="cd_test">Testar</string>
     <string name="cd_unlink">Desassociar</string>
-    <string name="cd_nuvio_logo">NuvioTV</string>
+    <string name="cd_despegue_logo">DespegueTV</string>
     <string name="cd_trakt_logo">Logótipo do Trakt</string>
     <string name="cd_trakt_qr">QR de ativação do Trakt</string>
     <string name="cd_imdb">IMDb</string>
@@ -1498,7 +1498,7 @@
     <string name="cd_expand">Expandir %1$s</string>
     <string name="cd_collapse">Recolher %1$s</string>
     <string name="cd_qr_login">Código QR de início de sessão</string>
-    <string name="cd_nuvio">Nuvio</string>
+    <string name="cd_despegue">Despegue</string>
 
     <!-- Debug -->
     <string name="debug_signin_success">Sessão iniciada com sucesso</string>
@@ -1522,7 +1522,7 @@
     <string name="collections_paste_clipboard">Colar da Área de Transferência</string>
     <string name="collections_validate">Validar</string>
     <string name="collections_paste_hint">Cola o JSON das coleções aqui…</string>
-    <string name="collections_file_description">Lê o ficheiro nuvio-collections.json da pasta de Transferências.</string>
+    <string name="collections_file_description">Lê o ficheiro despegue-collections.json da pasta de Transferências.</string>
     <string name="collections_load_file">Carregar Ficheiro</string>
     <string name="collections_file_loaded">Ficheiro carregado (%1$d caracteres)</string>
     <string name="collections_fetch_url">Obter URL</string>
@@ -1599,7 +1599,7 @@
     <string name="collections_editor_tmdb_collection_helper">Exemplo: Star Wars Collection, Harry Potter Collection, ou um URL de coleção.</string>
     <string name="collections_editor_tmdb_network_helper">Exemplos de IDs: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Exemplo: https://www.themoviedb.org/list/8504994 ou 8504994.</string>
-    <string name="collections_editor_tmdb_title_helper">Aparece como o nome da linha/separador. Se estiver vazio, o Nuvio cria um a partir da fonte.</string>
+    <string name="collections_editor_tmdb_title_helper">Aparece como o nome da linha/separador. Se estiver vazio, o Despegue cria um a partir da fonte.</string>
     <string name="collections_editor_tmdb_quick_genres">Géneros rápidos</string>
     <string name="collections_editor_tmdb_quick_languages">Idiomas rápidos</string>
     <string name="collections_editor_tmdb_quick_countries">Países rápidos</string>
