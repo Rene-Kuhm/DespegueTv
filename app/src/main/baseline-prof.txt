@@ -5719,7 +5719,7 @@ HSPLb8/e;-><init>(ILda/c;Ljava/lang/Object;)V
 HSPLb8/e;-><init>(Lpa/n;Lda/c;)V
 HSPLb8/e;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 HSPLb8/e;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
-PLb8/e0;-><init>(Lcom/despegue/tv/data/remote/api/ImdbTapframeApi;Lcom/despegue/tv/data/remote/api/SeriesGraphApi;)V
+PLb8/e0;-><init>(Lcom/despegue/tv/data/remote/api/ImdbEpisodeRatingsApi;Lcom/despegue/tv/data/remote/api/SeriesGraphApi;)V
 PLb8/e0;->a(Lb8/e0;Ljava/lang/String;Ljava/lang/Integer;Lfa/c;)Ljava/lang/Object;
 PLb8/e0;->b(Ljava/lang/String;Lfa/c;)Ljava/io/Serializable;
 PLb8/e0;->c(ILfa/c;)Ljava/io/Serializable;

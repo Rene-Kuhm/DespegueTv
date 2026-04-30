@@ -55,6 +55,12 @@ import coil3.request.ImageRequest
 private val SidebarLeadingVisualSize = 34.dp
 private val SidebarContentGap = 14.dp
 private val SidebarProfileContentGap = 18.dp
+private val SidebarBrandPanelTop = Color(0xF205070C)
+private val SidebarBrandPanelMiddle = Color(0xE80D0D0D)
+private val SidebarBrandPanelBottom = Color(0xDE151515)
+private val SidebarBrandInk = Color(0xFF05070C)
+private val SidebarBrandSelectedIcon = Color(0xFFE6E6E6)
+private val SidebarBrandIdleIcon = Color(0xFF686868)
 
 @Composable
 internal fun ModernSidebarBlurPanel(
@@ -100,7 +106,13 @@ internal fun ModernSidebarBlurPanel(
     val borderBase = DespegueColors.Border
     val panelBackgroundBrush = remember(blurEnabled, bgElevated, bgCard) {
         if (blurEnabled) {
-            Brush.verticalGradient(listOf(Color(0xD64A4F59), Color(0xCC3F454F), Color(0xC640474F)))
+            Brush.verticalGradient(
+                listOf(
+                    SidebarBrandPanelTop,
+                    SidebarBrandPanelMiddle,
+                    SidebarBrandPanelBottom
+                )
+            )
         } else {
             Brush.verticalGradient(listOf(bgElevated, bgCard))
         }
@@ -237,8 +249,8 @@ private fun SidebarNavigationItem(
         label = "sidebarItemBorder"
     )
 
-    val contentColor = if (selected) Color(0xFF10151F) else Color.White
-    val iconCircleColor = if (selected) Color(0xFFE7E2EF) else Color(0xFF6A6A74)
+    val contentColor = if (selected) SidebarBrandInk else Color.White
+    val iconCircleColor = if (selected) SidebarBrandSelectedIcon else SidebarBrandIdleIcon
     Card(
         onClick = onClick,
         modifier = modifier

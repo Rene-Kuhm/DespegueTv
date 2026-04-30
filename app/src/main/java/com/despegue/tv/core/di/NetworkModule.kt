@@ -12,7 +12,7 @@ import com.despegue.tv.data.remote.api.GitHubReleaseApi
 import com.despegue.tv.data.remote.api.TraktApi
 import com.despegue.tv.data.remote.api.TrailerApi
 import com.despegue.tv.data.remote.api.IntroDbApi
-import com.despegue.tv.data.remote.api.ImdbTapframeApi
+import com.despegue.tv.data.remote.api.ImdbEpisodeRatingsApi
 import com.despegue.tv.data.remote.api.MDBListApi
 import com.despegue.tv.data.remote.api.ParentalGuideApi
 import com.despegue.tv.data.remote.api.SeriesGraphApi
@@ -400,9 +400,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("imdbTapframe")
-    fun provideImdbTapframeRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        val rawBaseUrl = BuildConfig.IMDB_TAPFRAME_API_BASE_URL
+    @Named("imdbEpisodeRatings")
+    fun provideImdbEpisodeRatingsRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
+        val rawBaseUrl = BuildConfig.IMDB_EPISODE_RATINGS_API_BASE_URL
         val normalizedBaseUrl = if (rawBaseUrl.isNotBlank()) {
             if (rawBaseUrl.endsWith('/')) rawBaseUrl else "$rawBaseUrl/"
         } else {
@@ -417,6 +417,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideImdbTapframeApi(@Named("imdbTapframe") retrofit: Retrofit): ImdbTapframeApi =
-        retrofit.create(ImdbTapframeApi::class.java)
+    fun provideImdbEpisodeRatingsApi(@Named("imdbEpisodeRatings") retrofit: Retrofit): ImdbEpisodeRatingsApi =
+        retrofit.create(ImdbEpisodeRatingsApi::class.java)
 }

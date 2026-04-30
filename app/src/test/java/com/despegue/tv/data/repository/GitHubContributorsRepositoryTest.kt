@@ -29,7 +29,7 @@ class GitHubContributorsRepositoryTest {
                     )
                 )
             ),
-            contributionsBaseUrl = "https://gitserver.tapframe.space/"
+            contributionsBaseUrl = "https://example.com/unique-contributions/"
         )
 
         val result = repository.getContributors()
@@ -55,7 +55,7 @@ class GitHubContributorsRepositoryTest {
                     )
                 )
             ),
-            contributionsBaseUrl = "https://gitserver.tapframe.space/"
+            contributionsBaseUrl = "https://example.com/unique-contributions/"
         )
 
         val contributors = repository.getContributors().getOrThrow()
@@ -79,7 +79,7 @@ class GitHubContributorsRepositoryTest {
                     )
                 )
             ),
-            contributionsBaseUrl = "https://gitserver.tapframe.space/"
+            contributionsBaseUrl = "https://example.com/unique-contributions/"
         )
 
         val contributors = repository.getContributors().getOrThrow()
@@ -94,7 +94,7 @@ class GitHubContributorsRepositoryTest {
             contributionsApi = FakeUniqueContributionsApi(
                 uniqueContributions = errorResponse(500)
             ),
-            contributionsBaseUrl = "https://gitserver.tapframe.space/"
+            contributionsBaseUrl = "https://example.com/unique-contributions/"
         )
 
         val result = repository.getContributors()
