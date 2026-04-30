@@ -1,0 +1,388 @@
+@file:OptIn(ExperimentalTvMaterial3Api::class)
+
+package com.despegue.tv.ui.screens.settings
+
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import android.widget.Toast
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.tv.material3.Border
+import androidx.tv.material3.Button
+import androidx.tv.material3.ButtonDefaults
+import androidx.tv.material3.Card
+import androidx.tv.material3.CardDefaults
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Icon
+import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
+import com.despegue.tv.R
+import com.despegue.tv.domain.model.AppTheme
+import com.despegue.tv.ui.components.DespegueDialog
+import com.despegue.tv.ui.theme.DespegueColors
+import com.despegue.tv.ui.theme.ThemeColors
+import com.despegue.tv.ui.theme.getFontFamily
+import kotlinx.coroutines.delay
+import java.util.Locale
+
+@Composable
+fun ThemeSettingsScreen(
+    viewModel: ThemeSettingsViewModel = hiltViewModel(),
+    onBackPress: () -> Unit
+) {
+    BackHandler { onBackPress() }
+
+    SettingsStandaloneScaffold(
+        title = stringResource(R.string.appearance_title),
+        subtitle = stringResource(R.string.appearance_subtitle)
+    ) {
+        ThemeSettingsContent(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun ThemeSettingsContent(
+    viewModel: ThemeSettingsViewModel = hiltViewModel(),
+    initialFocusRequester: FocusRequester? = null
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showFontDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var pendingLanguageRestart by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    val strLanguageSystem = stringResource(R.string.appearance_language_system)
+    val supportedLocales = remember(strLanguageSystem) {
+        val tags = listOf(
+            "en", "ru", "ar", "bs", "de", "el", "es", "es-419", "hu", "fr", "it", "no", "pl",
+            "pt-PT", "pt-BR", "tr", "cs", "sk", "sl", "sv", "ro", "ja",
+            "nl", "vi", "hi", "lt", "he", "el"
+        )
+        listOf(null to strLanguageSystem) + tags.map { tag ->
+            val locale = Locale.forLanguageTag(tag)
+            tag to locale.getDisplayName(locale).replaceFirstChar { it.uppercase() }
+        }.sortedBy { it.second }
+    }
+    var selectedTag by remember {
+        mutableStateOf(
+            context.getSharedPreferences("app_locale", android.content.Context.MODE_PRIVATE)
+                .getString("locale_tag", null)?.takeIf { it.isNotEmpty() }
+        )
+    }
+    val currentLocaleName = supportedLocales.firstOrNull { it.first == selectedTag }?.second ?: stringResource(R.string.appearance_language_system)
+    val strRestartHint = stringResource(R.string.appearance_language_restart_hint)
+
+    LaunchedEffect(pendingLanguageRestart, showLanguageDialog) {
+        if (pendingLanguageRestart && !showLanguageDialog) {
+            // Let the dialog window detach before recreating the Activity to avoid focus/window ANRs.
+            delay(150)
+            context.findActivity()?.recreate()
+                ?: Toast.makeText(context, strRestartHint, Toast.LENGTH_LONG).show()
+            pendingLanguageRestart = false
+        }
+    }
+
+    val themeScrollState = rememberScrollState()
+    val themeRowState = rememberLazyListState()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(themeScrollState),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            SettingsDetailHeader(
+                title = stringResource(R.string.appearance_title),
+                subtitle = stringResource(R.string.appearance_subtitle)
+            )
+
+            SettingsGroupCard(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(R.string.appearance_color_theme),
+                subtitle = stringResource(R.string.appearance_color_theme_subtitle)
+            ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    LazyRow(
+                        state = themeRowState,
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        itemsIndexed(
+                            items = uiState.availableThemes,
+                            key = { _, theme -> theme.name }
+                        ) { index, theme ->
+                            ThemeSwatchChip(
+                                theme = theme,
+                                isSelected = theme == uiState.selectedTheme,
+                                onClick = { viewModel.onEvent(ThemeSettingsEvent.SelectTheme(theme)) },
+                                modifier = if (index == 0 && initialFocusRequester != null) {
+                                    Modifier.focusRequester(initialFocusRequester)
+                                } else {
+                                    Modifier
+                                }
+                            )
+                        }
+                    }
+                    SettingsHorizontalScrollIndicators(state = themeRowState)
+                }
+                SettingsToggleRow(
+                    title = stringResource(R.string.appearance_amoled_mode),
+                    subtitle = stringResource(R.string.appearance_amoled_mode_subtitle),
+                    checked = uiState.amoledMode,
+                    onToggle = {
+                        viewModel.onEvent(ThemeSettingsEvent.ToggleAmoledMode(!uiState.amoledMode))
+                    }
+                )
+                if (uiState.amoledMode) {
+                    SettingsToggleRow(
+                        title = stringResource(R.string.appearance_amoled_surfaces_mode),
+                        subtitle = stringResource(R.string.appearance_amoled_surfaces_mode_subtitle),
+                        checked = uiState.amoledSurfacesMode,
+                        onToggle = {
+                            viewModel.onEvent(
+                                ThemeSettingsEvent.ToggleAmoledSurfacesMode(!uiState.amoledSurfacesMode)
+                            )
+                        }
+                    )
+                }
+            }
+
+            SettingsGroupCard(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(R.string.appearance_font_and_language),
+                subtitle = stringResource(R.string.appearance_font_and_language_subtitle)
+            ) {
+                SettingsActionRow(
+                    title = stringResource(R.string.appearance_font),
+                    subtitle = stringResource(R.string.appearance_font_subtitle),
+                    value = uiState.selectedFont.displayName,
+                    onClick = { showFontDialog = true }
+                )
+                SettingsActionRow(
+                    title = stringResource(R.string.appearance_language),
+                    subtitle = stringResource(R.string.appearance_language_subtitle),
+                    value = currentLocaleName,
+                    onClick = { showLanguageDialog = true }
+                )
+            }
+        }
+        SettingsVerticalScrollIndicators(state = themeScrollState)
+    }
+
+    if (showFontDialog) {
+        val fontFocusRequester = remember { FocusRequester() }
+        LaunchedEffect(Unit) { fontFocusRequester.requestFocus() }
+        DespegueDialog(
+            onDismiss = { showFontDialog = false },
+            title = stringResource(R.string.appearance_font_dialog_title),
+            width = 400.dp,
+            suppressFirstKeyUp = false
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(vertical = 2.dp)
+                ) {
+                    val fonts = uiState.availableFonts
+                    for (index in fonts.indices) {
+                        val font = fonts[index]
+                        item {
+                            val isSelected = font == uiState.selectedFont
+                            Button(
+                                onClick = {
+                                    viewModel.onEvent(ThemeSettingsEvent.SelectFont(font))
+                                    showFontDialog = false
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .then(if (index == 0) Modifier.focusRequester(fontFocusRequester) else Modifier),
+                                colors = ButtonDefaults.colors(
+                                    containerColor = if (isSelected) DespegueColors.FocusBackground else DespegueColors.BackgroundCard,
+                                    contentColor = DespegueColors.TextPrimary
+                                )
+                            ) {
+                                Text(
+                                    text = font.displayName,
+                                    fontFamily = getFontFamily(font)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showLanguageDialog) {
+        val firstFocusRequester = remember { FocusRequester() }
+        LaunchedEffect(Unit) { firstFocusRequester.requestFocus() }
+        DespegueDialog(
+            onDismiss = { showLanguageDialog = false },
+            title = stringResource(R.string.appearance_language_dialog_title),
+            width = 400.dp,
+            suppressFirstKeyUp = false
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(vertical = 2.dp)
+                ) {
+                    for (index in supportedLocales.indices) {
+                        val (tag, name) = supportedLocales[index]
+                        item {
+                            val isSelected = tag == selectedTag
+                            Button(
+                                onClick = {
+                                    val previousTag = selectedTag
+                                    context.getSharedPreferences("app_locale", android.content.Context.MODE_PRIVATE)
+                                        .edit().putString("locale_tag", tag ?: "").apply()
+                                    selectedTag = tag
+                                    showLanguageDialog = false
+                                    if (previousTag != tag) {
+                                        pendingLanguageRestart = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .then(if (index == 0) Modifier.focusRequester(firstFocusRequester) else Modifier),
+                                colors = ButtonDefaults.colors(
+                                    containerColor = if (isSelected) DespegueColors.FocusBackground else DespegueColors.BackgroundCard,
+                                    contentColor = DespegueColors.TextPrimary
+                                )
+                            ) {
+                                Text(name)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+@Composable
+private fun ThemeSwatchChip(
+    theme: AppTheme,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val palette = ThemeColors.getColorPalette(theme)
+    val chipShape = RoundedCornerShape(18.dp)
+
+    Card(
+        onClick = onClick,
+        modifier = modifier
+            .width(96.dp)
+            .onFocusChanged { state ->
+                val nowFocused = state.isFocused
+                if (isFocused != nowFocused) {
+                    isFocused = nowFocused
+                }
+            },
+        colors = CardDefaults.colors(
+            containerColor = DespegueColors.Background,
+            focusedContainerColor = DespegueColors.Background
+        ),
+        border = CardDefaults.border(
+            border = Border.None,
+            focusedBorder = Border(
+                border = BorderStroke(2.dp, DespegueColors.FocusRing),
+                shape = chipShape
+            )
+        ),
+        shape = CardDefaults.shape(chipShape),
+        scale = CardDefaults.scale(focusedScale = 1f, pressedScale = 1f)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(palette.secondary),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = stringResource(R.string.cd_selected),
+                        tint = palette.onSecondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = theme.displayName,
+                style = MaterialTheme.typography.labelMedium,
+                color = if (isFocused || isSelected) DespegueColors.TextPrimary else DespegueColors.TextSecondary,
+                maxLines = 1
+            )
+        }
+    }
+}

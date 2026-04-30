@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio</string>
+    <string name="app_name">Despegue</string>
     <string name="type_movie">Film</string>
     <string name="type_series">Seriál</string>
     <string name="type_unknown">Neznámé</string>
@@ -64,7 +64,7 @@
     <!-- HomeScreen -->
     <string name="home_no_addons">Žádné doplňky nejsou nainstalovány. Přidejte jeden pro začátek.</string>
     <string name="home_no_catalog_addons">Žádné katalogové doplňky nejsou nainstalovány. Nainstalujte katalogový doplněk pro zobrazení obsahu.</string>
-    <string name="auth_notice_nuvio_logged_out">Byli jste odhlášeni z Nuvio. Přihlaste se prosím znovu.</string>
+    <string name="auth_notice_despegue_logged_out">Byli jste odhlášeni z Despegue. Přihlaste se prosím znovu.</string>
     <string name="auth_notice_trakt_logged_out">Byli jste odhlášeni z Traktu. Prosím znovu se připojte.</string>
     <string name="error_generic">Nastala chyba</string>
 
@@ -320,12 +320,12 @@
 
     <!-- SupportersContributorsScreen -->
     <string name="supporters_contributors_title">Podporovatelé a přispěvatelé</string>
-    <string name="supporters_contributors_subtitle">Lidé podporující Nuvio a přispěvatelé budující aplikaci pro TV i mobil.</string>
+    <string name="supporters_contributors_subtitle">Lidé podporující Despegue a přispěvatelé budující aplikaci pro TV i mobil.</string>
     <string name="supporters_contributors_supporters_copy">Podporovatelé a dárci pomáhají projektu pokračovat, financují infrastrukturu a umožňují realizaci ambiciózních funkcí.</string>
-    <string name="supporters_contributors_donate_copy">Nuvio zůstane zdarma a open source. Pokud chcete projekt podpořit, můžete přispět na čas a infrastrukturu stojící za ním.</string>
-    <string name="supporters_contributors_donate_button">Přispět Nuvio</string>
+    <string name="supporters_contributors_donate_copy">Despegue zůstane zdarma a open source. Pokud chcete projekt podpořit, můžete přispět na čas a infrastrukturu stojící za ním.</string>
+    <string name="supporters_contributors_donate_button">Přispět Despegue</string>
     <string name="supporters_contributors_qr_title">Naskenujte pro přispění</string>
-    <string name="supporters_contributors_qr_subtitle">Otevřete odkaz na telefonu a podpořte Nuvio přes Ko-fi.</string>
+    <string name="supporters_contributors_qr_subtitle">Otevřete odkaz na telefonu a podpořte Despegue přes Ko-fi.</string>
     <string name="supporters_contributors_qr_hint">Namiřte fotoaparát na QR kód nebo použijte tlačítko níže.</string>
     <string name="supporters_contributors_back_button">Zpět na detail</string>
     <string name="supporters_tab">Podporovatelé</string>
@@ -385,8 +385,8 @@
     <string name="playback_player_ask_desc">Vybrat přehrávač pokaždé</string>
     <string name="playback_player_auto">Automaticky (nejlepší pro obsah)</string>
     <string name="playback_player_auto_desc">ExoPlayer pro filmy a TV pořady · MPV pro anime</string>
-    <string name="playback_engine_exoplayer_desc">Nejlepší kompatibilita se současnými funkcemi Nuvio.</string>
-    <string name="playback_engine_mvplayer_desc">Používá libmpv s ovládáním Nuvio OSD. Experimentální.</string>
+    <string name="playback_engine_exoplayer_desc">Nejlepší kompatibilita se současnými funkcemi Despegue.</string>
+    <string name="playback_engine_mvplayer_desc">Používá libmpv s ovládáním Despegue OSD. Experimentální.</string>
 
     <!-- PlaybackAudioSettings -->
     <string name="audio_trailer_section">Trailer</string>
@@ -702,13 +702,13 @@
     <string name="trakt_watch_progress_title">Průběh sledování</string>
     <string name="trakt_watch_progress_subtitle">Vyberte, který zdroj průběhu ovládá pokračování a „pokračovat ve sledování"</string>
     <string name="trakt_watch_progress_dialog_title">Průběh sledování</string>
-    <string name="trakt_watch_progress_dialog_subtitle">Zvolte, zda by pokračování a „pokračovat ve sledování" měly používat Trakt nebo Nuvio Sync, zatímco zaznamenávání Traktu zůstává aktivní.</string>
+    <string name="trakt_watch_progress_dialog_subtitle">Zvolte, zda by pokračování a „pokračovat ve sledování" měly používat Trakt nebo Despegue Sync, zatímco zaznamenávání Traktu zůstává aktivní.</string>
     <string name="trakt_watch_progress_source_trakt">Trakt</string>
-    <string name="trakt_watch_progress_source_nuvio">Nuvio Sync</string>
+    <string name="trakt_watch_progress_source_despegue">Despegue Sync</string>
     <string name="trakt_setting_on">Zapnuto</string>
     <string name="trakt_setting_off">Vypnuto</string>
     <string name="trakt_watch_progress_trakt_selected">Zdroj průběhu sledování nastaven na Trakt</string>
-    <string name="trakt_watch_progress_nuvio_selected">Zdroj průběhu sledování nastaven na Nuvio Sync</string>
+    <string name="trakt_watch_progress_despegue_selected">Zdroj průběhu sledování nastaven na Despegue Sync</string>
     <string name="trakt_continue_watching_window">Okno „pokračovat ve sledování"</string>
     <string name="trakt_continue_watching_subtitle">Historie Traktu zohledňovaná pro „pokračovat ve sledování"</string>
     <string name="trakt_unaired_next_up">Nevysílané epizody „další na řadě"</string>
@@ -730,7 +730,7 @@
     <string name="trakt_stat_watched_hours">Hodiny sledování</string>
     <string name="trakt_disconnect">Odpojit</string>
     <string name="trakt_disconnect_title">Odpojit Trakt?</string>
-    <string name="trakt_disconnect_subtitle">Tím dojde k odpojení vašeho účtu Trakt od Nuvio.</string>
+    <string name="trakt_disconnect_subtitle">Tím dojde k odpojení vašeho účtu Trakt od Despegue.</string>
     <string name="trakt_login">Přihlásit se</string>
     <string name="trakt_retry">Zkusit znovu</string>
     <string name="trakt_back">Zpět</string>
@@ -838,7 +838,7 @@
     <string name="profile_pin_overlay_set_support">Tento PIN bude vyžadován před otevřením tohoto profilu.</string>
     <string name="profile_pin_overlay_confirm_support">Pro dokončení nastavení znovu zadejte stejné 4 číslice.</string>
     <string name="profile_pin_overlay_mismatch">PINy se neshodovaly. Zadejte nový PIN znovu.</string>
-    <string name="profile_pin_overlay_forgot_hint">Zapomněli jste PIN? Resetujte ho ze svého účtu Nuvio na webu Nuvio.</string>
+    <string name="profile_pin_overlay_forgot_hint">Zapomněli jste PIN? Resetujte ho ze svého účtu Despegue na webu Despegue.</string>
     <string name="profile_pin_overlay_back_hint">Stiskněte zpět pro zrušení</string>
 
     <!-- AddonManagerScreen -->
@@ -889,7 +889,7 @@
     <string name="stream_type_torrent">Torrent</string>
     <string name="stream_type_youtube">YouTube</string>
     <string name="p2p_consent_title">P2P streamování</string>
-    <string name="p2p_consent_body">Tento stream používá technologii peer-to-peer (P2P). Zapnutím P2P berete na vědomí a souhlasíte s tím, že:\n\n\u2022 Vaše IP adresa bude viditelná ostatním uzlům v síti\n\u2022 Nesete výhradní odpovědnost za obsah, ke kterému přistupujete\n\u2022 Potvrzujete, že máte zákonné právo streamovat tento obsah ve vaší jurisdikci\n\u2022 Nuvio nehostuje, nerozdává ani nekontroluje žádný P2P obsah\n\u2022 Nuvio nenese žádnou odpovědnost za právní důsledky plynoucí z vašeho používání P2P streamování\n\nTuto funkci používáte zcela na vlastní riziko. P2P lze kdykoli vypnout v Nastavení.</string>
+    <string name="p2p_consent_body">Tento stream používá technologii peer-to-peer (P2P). Zapnutím P2P berete na vědomí a souhlasíte s tím, že:\n\n\u2022 Vaše IP adresa bude viditelná ostatním uzlům v síti\n\u2022 Nesete výhradní odpovědnost za obsah, ke kterému přistupujete\n\u2022 Potvrzujete, že máte zákonné právo streamovat tento obsah ve vaší jurisdikci\n\u2022 Despegue nehostuje, nerozdává ani nekontroluje žádný P2P obsah\n\u2022 Despegue nenese žádnou odpovědnost za právní důsledky plynoucí z vašeho používání P2P streamování\n\nTuto funkci používáte zcela na vlastní riziko. P2P lze kdykoli vypnout v Nastavení.</string>
     <string name="p2p_consent_enable">Zapnout P2P</string>
     <string name="p2p_consent_cancel">Zrušit</string>
     <string name="settings_p2p_title">P2P streamování</string>
@@ -1132,7 +1132,7 @@
     <string name="library_delete_subtitle">Tím odeberete seznam a všechny jeho položky z Traktu.</string>
     <string name="library_delete_confirm">Smazat</string>
     <string name="library_source_local">MÍSTNÍ</string>
-    <string name="library_source_nuvio">NUVIO</string>
+    <string name="library_source_despegue">DESPEGUE</string>
     <string name="library_source_trakt">TRAKT</string>
     <string name="library_syncing_library">Synchronizace knihovny\u2026</string>
     <string name="library_type_all">Vše</string>
@@ -1250,7 +1250,7 @@
     <string name="catalog_see_all_empty_subtitle">Zkuste jiný katalog nebo se podívejte později</string>
 
     <!-- LayoutSelectionScreen -->
-    <string name="layout_selection_welcome">Vítejte v Nuvio</string>
+    <string name="layout_selection_welcome">Vítejte v Despegue</string>
     <string name="layout_selection_subtitle">Vyberte rozložení domovské obrazovky</string>
     <string name="layout_selection_continue">Pokračovat</string>
 
@@ -1263,7 +1263,7 @@
 
     <!-- AccountScreen -->
     <string name="account_title">Účet</string>
-    <string name="account_sign_in_description">Přihlaste se pro synchronizaci knihovny, průběhu sledování, doplňků a pluginů napříč zařízeními. Synchronizace knihovny používá Nuvio Sync, pokud není připojen Trakt, a průběh sledování může používat Trakt nebo Nuvio Sync.</string>
+    <string name="account_sign_in_description">Přihlaste se pro synchronizaci knihovny, průběhu sledování, doplňků a pluginů napříč zařízeními. Synchronizace knihovny používá Despegue Sync, pokud není připojen Trakt, a průběh sledování může používat Trakt nebo Despegue Sync.</string>
     <string name="account_sync_code_title">Synchronizační kód</string>
     <string name="account_sync_code_description">Synchronizujte napříč zařízeními bez vytváření účtu.</string>
     <string name="account_linked_devices">Propojená zařízení (%1$d)</string>
@@ -1437,7 +1437,7 @@
     <string name="cd_preview">Náhled</string>
     <string name="cd_test">Testovat</string>
     <string name="cd_unlink">Odpojit</string>
-    <string name="cd_nuvio_logo">NuvioTV</string>
+    <string name="cd_despegue_logo">DespegueTV</string>
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">QR aktivace Trakt</string>
     <string name="cd_imdb">IMDb</string>
@@ -1448,7 +1448,7 @@
     <string name="cd_expand">Rozbalit %1$s</string>
     <string name="cd_collapse">Sbalit %1$s</string>
     <string name="cd_qr_login">QR přihlašovací kód</string>
-    <string name="cd_nuvio">Nuvio</string>
+    <string name="cd_despegue">Despegue</string>
 
     <!-- Debug -->
     <string name="debug_signin_success">Přihlášení proběhlo úspěšně</string>
@@ -1472,7 +1472,7 @@
     <string name="collections_paste_clipboard">Vložit ze schránky</string>
     <string name="collections_validate">Ověřit</string>
     <string name="collections_paste_hint">Vložte JSON kolekcí sem…</string>
-    <string name="collections_file_description">Načte soubor nuvio-collections.json ze složky Stažené soubory.</string>
+    <string name="collections_file_description">Načte soubor despegue-collections.json ze složky Stažené soubory.</string>
     <string name="collections_load_file">Načíst soubor</string>
     <string name="collections_file_loaded">Soubor načten (%1$d znaků)</string>
     <string name="collections_fetch_url">Načíst URL</string>
