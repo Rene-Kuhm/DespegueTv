@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nuvio.tv.baselineprofile"
+    namespace = "com.despegue.tv.baselineprofile"
     compileSdk = 36
 
     defaultConfig {

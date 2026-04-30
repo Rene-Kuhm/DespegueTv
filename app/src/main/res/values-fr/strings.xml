@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio</string>
+    <string name="app_name">Despegue</string>
     <string name="type_movie">Film</string>
     <string name="type_series">Série</string>
     <string name="type_unknown">Inconnu</string>
@@ -64,7 +64,7 @@
     <!-- HomeScreen -->
     <string name="home_no_addons">Aucun addon installé. Ajoute-en un pour commencer.</string>
     <string name="home_no_catalog_addons">Aucun addon de catalogue installé. Installe un addon de catalogue pour voir du contenu.</string>
-    <string name="auth_notice_nuvio_logged_out">Tu as été déconnecté de Nuvio. Reconnecte-toi.</string>
+    <string name="auth_notice_despegue_logged_out">Tu as été déconnecté de Despegue. Reconnecte-toi.</string>
     <string name="auth_notice_trakt_logged_out">Tu as été déconnecté de Trakt. Reconnecte-toi.</string>
     <string name="error_generic">Une erreur est survenue</string>
 
@@ -315,12 +315,12 @@
 
     <!-- SupportersContributorsScreen -->
     <string name="supporters_contributors_title">Soutiens et contributeurs</string>
-    <string name="supporters_contributors_subtitle">Les personnes qui soutiennent Nuvio et les contributeurs qui le développent sur TV et mobile.</string>
+    <string name="supporters_contributors_subtitle">Les personnes qui soutiennent Despegue et les contributeurs qui le développent sur TV et mobile.</string>
     <string name="supporters_contributors_supporters_copy">Les soutiens et les donateurs permettent au projet de continuer à avancer, de financer l\'infrastructure et de laisser la place à des fonctionnalités ambitieuses.</string>
-    <string name="supporters_contributors_donate_copy">Nuvio restera gratuit et open source. Si tu souhaites soutenir le projet, tu peux aider à couvrir le temps et l\'infrastructure nécessaires à son développement.</string>
-    <string name="supporters_contributors_donate_button">Faire un don à Nuvio</string>
+    <string name="supporters_contributors_donate_copy">Despegue restera gratuit et open source. Si tu souhaites soutenir le projet, tu peux aider à couvrir le temps et l\'infrastructure nécessaires à son développement.</string>
+    <string name="supporters_contributors_donate_button">Faire un don à Despegue</string>
     <string name="supporters_contributors_qr_title">Scanner pour faire un don</string>
-    <string name="supporters_contributors_qr_subtitle">Ouvre le lien sur ton téléphone et soutiens Nuvio via Ko-fi.</string>
+    <string name="supporters_contributors_qr_subtitle">Ouvre le lien sur ton téléphone et soutiens Despegue via Ko-fi.</string>
     <string name="supporters_contributors_qr_hint">Pointe ta caméra vers le code QR ou utilise le bouton ci-dessous.</string>
     <string name="supporters_contributors_back_button">Revenir aux détails</string>
     <string name="supporters_tab">Soutiens</string>
@@ -378,8 +378,8 @@
     <string name="playback_resolution_matching_sub">Autoriser les changements de mode d\'affichage pour correspondre à la résolution vidéo.</string>
     <string name="playback_player_external_desc">Toujours ouvrir les flux dans une application externe</string>
     <string name="playback_player_ask_desc">Choisir le lecteur à chaque fois</string>
-    <string name="playback_engine_exoplayer_desc">Meilleure compatibilité avec les fonctionnalités actuelles de Nuvio.</string>
-    <string name="playback_engine_mvplayer_desc">Utilise libmpv avec les contrôles OSD de Nuvio. Expérimental.</string>
+    <string name="playback_engine_exoplayer_desc">Meilleure compatibilité avec les fonctionnalités actuelles de Despegue.</string>
+    <string name="playback_engine_mvplayer_desc">Utilise libmpv avec les contrôles OSD de Despegue. Expérimental.</string>
 
     <!-- PlaybackAudioSettings -->
     <string name="audio_trailer_section">Bande-annonce</string>
@@ -693,13 +693,13 @@
     <string name="trakt_watch_progress_title">Progression</string>
     <string name="trakt_watch_progress_subtitle">Choisir quelle source de progression alimente la reprise et Continuer à regarder</string>
     <string name="trakt_watch_progress_dialog_title">Progression</string>
-    <string name="trakt_watch_progress_dialog_subtitle">Choisir si la reprise et Continuer à regarder utilisent Trakt ou Nuvio Sync, tout en maintenant le scrobbling Trakt actif.</string>
+    <string name="trakt_watch_progress_dialog_subtitle">Choisir si la reprise et Continuer à regarder utilisent Trakt ou Despegue Sync, tout en maintenant le scrobbling Trakt actif.</string>
     <string name="trakt_watch_progress_source_trakt">Trakt</string>
-    <string name="trakt_watch_progress_source_nuvio">Nuvio Sync</string>
+    <string name="trakt_watch_progress_source_despegue">Despegue Sync</string>
     <string name="trakt_setting_on">Activé</string>
     <string name="trakt_setting_off">Désactivé</string>
     <string name="trakt_watch_progress_trakt_selected">Source de progression réglée sur Trakt</string>
-    <string name="trakt_watch_progress_nuvio_selected">Source de progression réglée sur Nuvio Sync</string>
+    <string name="trakt_watch_progress_despegue_selected">Source de progression réglée sur Despegue Sync</string>
     <string name="trakt_continue_watching_window">Fenêtre de Continuer à regarder</string>
     <string name="trakt_continue_watching_subtitle">Historique Trakt pris en compte pour Continuer à regarder</string>
     <string name="trakt_unaired_next_up">Épisodes suivants non diffusés</string>
@@ -721,7 +721,7 @@
     <string name="trakt_stat_watched_hours">Heures visionnées</string>
     <string name="trakt_disconnect">Déconnecter</string>
     <string name="trakt_disconnect_title">Déconnecter Trakt ?</string>
-    <string name="trakt_disconnect_subtitle">Cela déconnectera ton compte Trakt de Nuvio.</string>
+    <string name="trakt_disconnect_subtitle">Cela déconnectera ton compte Trakt de Despegue.</string>
     <string name="trakt_login">Connexion</string>
     <string name="trakt_retry">Réessayer</string>
     <string name="trakt_back">Retour</string>
@@ -827,7 +827,7 @@
     <string name="profile_pin_overlay_set_support">Le code PIN sera requis pour accéder à ce profil.</string>
     <string name="profile_pin_overlay_confirm_support">Saisis à nouveau les 4 chiffres pour terminer la configuration.</string>
     <string name="profile_pin_overlay_mismatch">Les codes PIN ne correspondent pas. Réessaie la saisie.</string>
-    <string name="profile_pin_overlay_forgot_hint">Code PIN oublié ? Réinitialise-le depuis ton compte Nuvio sur le site web.</string>
+    <string name="profile_pin_overlay_forgot_hint">Code PIN oublié ? Réinitialise-le depuis ton compte Despegue sur le site web.</string>
     <string name="profile_pin_overlay_back_hint">Appuie sur Retour pour annuler</string>
 
 
@@ -880,7 +880,7 @@
     <string name="stream_type_torrent">Torrent</string>
     <string name="stream_type_youtube">YouTube</string>
     <string name="p2p_consent_title">Streaming P2P</string>
-    <string name="p2p_consent_body">Ce flux utilise la technologie pair-à-pair (P2P). En activant le P2P, tu reconnais et acceptes que:\n\n\u2022 Ton adresse IP sera visible par les autres pairs du réseau\n\u2022 Tu es seul responsable du contenu auquel tu accèdes\n\u2022 Tu confirmes avoir le droit légal de visionner ce contenu dans ta juridiction\n\u2022 Nuvio n\'héberge, ne distribue ni ne contrôle aucun contenu P2P\n\u2022 Nuvio ne peut être tenu responsable des conséquences légales liées à ton utilisation du streaming P2P\n\nTu utilises cette fonctionnalité entièrement à tes risques. Le P2P peut être désactivé à tout moment dans les paramètres.</string>
+    <string name="p2p_consent_body">Ce flux utilise la technologie pair-à-pair (P2P). En activant le P2P, tu reconnais et acceptes que:\n\n\u2022 Ton adresse IP sera visible par les autres pairs du réseau\n\u2022 Tu es seul responsable du contenu auquel tu accèdes\n\u2022 Tu confirmes avoir le droit légal de visionner ce contenu dans ta juridiction\n\u2022 Despegue n\'héberge, ne distribue ni ne contrôle aucun contenu P2P\n\u2022 Despegue ne peut être tenu responsable des conséquences légales liées à ton utilisation du streaming P2P\n\nTu utilises cette fonctionnalité entièrement à tes risques. Le P2P peut être désactivé à tout moment dans les paramètres.</string>
     <string name="p2p_consent_enable">Activer le P2P</string>
     <string name="p2p_consent_cancel">Annuler</string>
     <string name="settings_p2p_title">Streaming P2P</string>
@@ -1121,7 +1121,7 @@
     <string name="library_delete_subtitle">Cela supprime la liste et tous ses éléments de Trakt.</string>
     <string name="library_delete_confirm">Supprimer</string>
     <string name="library_source_local">LOCAL</string>
-    <string name="library_source_nuvio">NUVIO</string>
+    <string name="library_source_despegue">DESPEGUE</string>
     <string name="library_source_trakt">TRAKT</string>
     <string name="library_syncing_library">Synchronisation de la bibliothèque\u2026</string>
     <string name="library_type_all">Tout</string>
@@ -1239,7 +1239,7 @@
     <string name="catalog_see_all_empty_subtitle">Essaie un autre catalogue ou reviens plus tard</string>
 
     <!-- LayoutSelectionScreen -->
-    <string name="layout_selection_welcome">Bienvenue sur Nuvio</string>
+    <string name="layout_selection_welcome">Bienvenue sur Despegue</string>
     <string name="layout_selection_subtitle">Choisis la disposition de ton écran d\'accueil</string>
     <string name="layout_selection_continue">Continuer</string>
 
@@ -1251,7 +1251,7 @@
     <string name="update_unknown_sources">Autorise l\'installation depuis des sources inconnues pour continuer.</string>
     <!-- AccountScreen -->
     <string name="account_title">Compte</string>
-    <string name="account_sign_in_description">Connecte-toi pour synchroniser ta bibliothèque, ta progression, tes addons et plugins entre tes appareils. La synchronisation de la bibliothèque utilise Nuvio Sync quand Trakt n\'est pas connecté, et la progression peut utiliser Trakt ou Nuvio Sync.</string>
+    <string name="account_sign_in_description">Connecte-toi pour synchroniser ta bibliothèque, ta progression, tes addons et plugins entre tes appareils. La synchronisation de la bibliothèque utilise Despegue Sync quand Trakt n\'est pas connecté, et la progression peut utiliser Trakt ou Despegue Sync.</string>
     <string name="account_sync_code_title">Code de synchronisation</string>
     <string name="account_sync_code_description">Synchroniser entre appareils sans créer de compte.</string>
     <string name="account_linked_devices">Appareils liés (%1$d)</string>
@@ -1424,7 +1424,7 @@
     <string name="cd_preview">Aperçu</string>
     <string name="cd_test">Tester</string>
     <string name="cd_unlink">Délier</string>
-    <string name="cd_nuvio_logo">NuvioTV</string>
+    <string name="cd_despegue_logo">DespegueTV</string>
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">Code QR d\'activation Trakt</string>
     <string name="cd_imdb">IMDb</string>
@@ -1435,7 +1435,7 @@
     <string name="cd_expand">Développer %1$s</string>
     <string name="cd_collapse">Réduire %1$s</string>
     <string name="cd_qr_login">Code QR de connexion</string>
-    <string name="cd_nuvio">Nuvio</string>
+    <string name="cd_despegue">Despegue</string>
 
     <!-- Debug -->
     <string name="debug_signin_success">Connexion réussie</string>
@@ -1459,7 +1459,7 @@
     <string name="collections_paste_clipboard">Coller depuis le presse-papiers</string>
     <string name="collections_validate">Valider</string>
     <string name="collections_paste_hint">Colle le JSON des collections ici…</string>
-    <string name="collections_file_description">Lit nuvio-collections.json depuis le dossier Téléchargements.</string>
+    <string name="collections_file_description">Lit despegue-collections.json depuis le dossier Téléchargements.</string>
     <string name="collections_load_file">Charger le fichier</string>
     <string name="collections_file_loaded">Fichier chargé (%1$d caractères)</string>
     <string name="collections_fetch_url">Récupérer l\'URL</string>

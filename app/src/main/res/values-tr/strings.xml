@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio</string>
+    <string name="app_name">Despegue</string>
     <string name="type_movie">Film</string>
     <string name="type_series">Dizi</string>
     <string name="type_unknown">Bilinmiyor</string>
@@ -64,7 +64,7 @@
     <!-- HomeScreen -->
     <string name="home_no_addons">Yüklü eklenti yok. Başlamak için bir eklenti ekleyin.</string>
     <string name="home_no_catalog_addons">Katalog eklentisi yok. İçerikleri görmek için bir katalog eklentisi yükleyin.</string>
-    <string name="auth_notice_nuvio_logged_out">Nuvio hesabınızdan çıkış yapıldı. Lütfen tekrar giriş yapın.</string>
+    <string name="auth_notice_despegue_logged_out">Despegue hesabınızdan çıkış yapıldı. Lütfen tekrar giriş yapın.</string>
     <string name="auth_notice_trakt_logged_out">Trakt hesabınızdan çıkış yapıldı. Lütfen yeniden bağlanın.</string>
     <string name="error_generic">Bir hata oluştu</string>
 
@@ -314,8 +314,8 @@
     <string name="advanced_section_cache">Önbellek</string>
     <string name="advanced_fast_horizontal_navigation">Hızlı Yatay Gezinme</string>
     <string name="advanced_fast_horizontal_navigation_subtitle">Performans için yatay listelerde daha pürüzsüz kaydırma sağlar</string>
-    <string name="advanced_nuvio_focus_scroll">Nuvio Odak Kaydırma</string>
-    <string name="advanced_nuvio_focus_scroll_subtitle">Varsayılan Android TV odak davranışını Nuvio\'nun özel kaydırma sistemi ile değiştirir</string>
+    <string name="advanced_despegue_focus_scroll">Despegue Odak Kaydırma</string>
+    <string name="advanced_despegue_focus_scroll_subtitle">Varsayılan Android TV odak davranışını Despegue\'nun özel kaydırma sistemi ile değiştirir</string>
     <string name="advanced_memory_only_vertical_scroll">Yalnızca Bellekte Dikey Kaydırma</string>
     <string name="advanced_memory_only_vertical_scroll_subtitle">Tüm listeyi bellekte tutarak dikey gezinmeyi hızlandırır (daha fazla RAM kullanır)</string>
     <string name="advanced_clear_cw_cache">İzlemeye Devam Et Önbelleğini Temizle</string>
@@ -351,12 +351,12 @@
 
     <!-- SupportersContributorsScreen -->
     <string name="supporters_contributors_title">Destekleyenler ve Katkıda Bulunanlar</string>
-    <string name="supporters_contributors_subtitle">Nuvio\'nun arkasındaki güç: Projeyi destekleyenler ile TV ve mobil uygulamaları geliştiren ekip.</string>
+    <string name="supporters_contributors_subtitle">Despegue\'nun arkasındaki güç: Projeyi destekleyenler ile TV ve mobil uygulamaları geliştiren ekip.</string>
     <string name="supporters_contributors_supporters_copy">Bağışçı ve destekçilerimiz, projenin sürekliliğini sağlıyor, altyapı maliyetlerini karşılıyor ve yepyeni özellikler için bize alan yaratıyor.</string>
-    <string name="supporters_contributors_donate_copy">Nuvio tamamen ücretsiz ve açık kaynak kalmaya devam edecektir. Ancak projeye destek olmak isterseniz, geliştirme süremi ve altyapı giderlerini karşılamama yardımcı olabilirsiniz.</string>
-    <string name="supporters_contributors_donate_button">Nuvio\'ya Destek Ol</string>
+    <string name="supporters_contributors_donate_copy">Despegue tamamen ücretsiz ve açık kaynak kalmaya devam edecektir. Ancak projeye destek olmak isterseniz, geliştirme süremi ve altyapı giderlerini karşılamama yardımcı olabilirsiniz.</string>
+    <string name="supporters_contributors_donate_button">Despegue\'ya Destek Ol</string>
     <string name="supporters_contributors_qr_title">Bağış yapmak için kodu taratın</string>
-    <string name="supporters_contributors_qr_subtitle">Ko-fi üzerinden Nuvio\'ya destek olmak için bağlantıyı akıllı telefonunuzdan açabilirsiniz.</string>
+    <string name="supporters_contributors_qr_subtitle">Ko-fi üzerinden Despegue\'ya destek olmak için bağlantıyı akıllı telefonunuzdan açabilirsiniz.</string>
     <string name="supporters_contributors_qr_hint">Kameranızı ekrandaki QR koda doğru tutun veya aşağıdaki butona tıklayın.</string>
     <string name="supporters_contributors_back_button">Ayrıntılara Dön</string>
     <string name="supporters_tab">Destekleyenler</string>
@@ -431,8 +431,8 @@
     <string name="playback_player_ask_desc">Her seferinde hangi oynatıcının kullanılacağını seçin</string>
     <string name="playback_player_auto">Otomatik (İçerik için en iyisi)</string>
     <string name="playback_player_auto_desc">Filmler ve Diziler için ExoPlayer · Anime için MPV</string>
-    <string name="playback_engine_exoplayer_desc">Nuvio\'nun mevcut özellikleriyle en uyumlu seçenek.</string>
-    <string name="playback_engine_mvplayer_desc">Nuvio ekran kontrolleriyle libmpv kullanır. Deneysel.</string>
+    <string name="playback_engine_exoplayer_desc">Despegue\'nun mevcut özellikleriyle en uyumlu seçenek.</string>
+    <string name="playback_engine_mvplayer_desc">Despegue ekran kontrolleriyle libmpv kullanır. Deneysel.</string>
 
     <!-- PlaybackAudioSettings -->
     <string name="audio_trailer_section">Fragman</string>
@@ -754,21 +754,21 @@
     <string name="trakt_watch_progress_title">İzleme İlerlemesi</string>
     <string name="trakt_watch_progress_subtitle">Devam etme ve izlemeye devam etme için hangi ilerleme kaynağının kullanılacağını seçin</string>
     <string name="trakt_watch_progress_dialog_title">İzleme İlerlemesi</string>
-    <string name="trakt_watch_progress_dialog_subtitle">Trakt scrobbling aktifken devam etme ve izlemeye devam etmenin Trakt mı yoksa Nuvio Sync mi kullanacağını seçin.</string>
+    <string name="trakt_watch_progress_dialog_subtitle">Trakt scrobbling aktifken devam etme ve izlemeye devam etmenin Trakt mı yoksa Despegue Sync mi kullanacağını seçin.</string>
     <string name="trakt_watch_progress_source_trakt">Trakt</string>
-    <string name="trakt_watch_progress_source_nuvio">Nuvio Sync</string>
+    <string name="trakt_watch_progress_source_despegue">Despegue Sync</string>
     <string name="trakt_library_source_title">Kütüphane Kaynağı</string>
     <string name="trakt_library_source_subtitle">Koleksiyonunuzu kaydetmek ve görüntülemek için hangi kütüphanenin kullanılacağını seçin</string>
     <string name="trakt_library_source_dialog_title">Kütüphane Kaynağı</string>
     <string name="trakt_library_source_dialog_subtitle">Kütüphane öğelerinizi nerede kaydedeceğinizi ve yöneteceğinizi seçin</string>
     <string name="trakt_library_source_trakt">Trakt</string>
-    <string name="trakt_library_source_nuvio">Nuvio Kütüphanesi</string>
+    <string name="trakt_library_source_despegue">Despegue Kütüphanesi</string>
     <string name="trakt_library_source_trakt_selected">Trakt kütüphanesi seçildi</string>
-    <string name="trakt_library_source_nuvio_selected">Nuvio kütüphanesi seçildi</string>
+    <string name="trakt_library_source_despegue_selected">Despegue kütüphanesi seçildi</string>
     <string name="trakt_setting_on">Açık</string>
     <string name="trakt_setting_off">Kapalı</string>
     <string name="trakt_watch_progress_trakt_selected">İzleme ilerlemesi kaynağı Trakt olarak ayarlandı</string>
-    <string name="trakt_watch_progress_nuvio_selected">İzleme ilerlemesi kaynağı Nuvio Sync olarak ayarlandı</string>
+    <string name="trakt_watch_progress_despegue_selected">İzleme ilerlemesi kaynağı Despegue Sync olarak ayarlandı</string>
     <string name="trakt_continue_watching_window">İzlemeye Devam Etme Penceresi</string>
     <string name="trakt_continue_watching_subtitle">İzlemeye devam etme için dikkate alınan Trakt geçmişi</string>
     <string name="trakt_unaired_next_up">Yayınlanmamış Sıradaki Bölümler</string>
@@ -790,7 +790,7 @@
     <string name="trakt_stat_watched_hours">İzlenen Saat</string>
     <string name="trakt_disconnect">Bağlantıyı Kes</string>
     <string name="trakt_disconnect_title">Trakt bağlantısı kesilsin mi?</string>
-    <string name="trakt_disconnect_subtitle">Bu işlem Trakt hesabınızın Nuvio ile bağlantısını kesecektir.</string>
+    <string name="trakt_disconnect_subtitle">Bu işlem Trakt hesabınızın Despegue ile bağlantısını kesecektir.</string>
     <string name="trakt_login">Giriş Yap</string>
     <string name="trakt_retry">Tekrar Dene</string>
     <string name="trakt_back">Geri</string>
@@ -898,7 +898,7 @@
     <string name="profile_pin_overlay_set_support">Bu PIN, profil açılmadan önce her seferinde istenecek.</string>
     <string name="profile_pin_overlay_confirm_support">Kurulumu tamamlamak için aynı 4 rakamı tekrar girin.</string>
     <string name="profile_pin_overlay_mismatch">PINler eşleşmedi. Tekrar deneyin.</string>
-    <string name="profile_pin_overlay_forgot_hint">PIN mi unuttunuz? Nuvio web sitesinden sıfırlayabilirsiniz.</string>
+    <string name="profile_pin_overlay_forgot_hint">PIN mi unuttunuz? Despegue web sitesinden sıfırlayabilirsiniz.</string>
     <string name="profile_pin_overlay_back_hint">İptal etmek için geri tuşuna basın</string>
 
 
@@ -951,7 +951,7 @@
     <string name="stream_type_torrent">Torrent</string>
     <string name="stream_type_youtube">YouTube</string>
     <string name="p2p_consent_title">P2P Yayın</string>
-    <string name="p2p_consent_body">Bu yayın eşler arası (P2P) teknolojisini kullanmaktadır. P2P\'yi etkinleştirerek şunları kabul etmiş olursunuz:\n\n\u2022 IP adresiniz ağdaki diğer kullanıcılara görünür hale gelecektir\n\u2022 Eriştiğiniz içerikten yalnızca siz sorumlusunuz\n\u2022 Bulunduğunuz yerde bu içeriği yasal olarak izleme hakkınız olduğunu onaylayıyorsunuz\n\u2022 Nuvio hiçbir P2P içeriği barındırmaz, dağıtmaz veya kontrol etmez\n\u2022 Nuvio, P2P yayını kullanımınızdan doğabilecek hukuki sonuçlardan sorumlu değildir\n\nBu özelliği tamamen kendi riskinizle kullanırsınız. P2P, istediğiniz zaman Ayarlar\'dan kapatılabilir.</string>
+    <string name="p2p_consent_body">Bu yayın eşler arası (P2P) teknolojisini kullanmaktadır. P2P\'yi etkinleştirerek şunları kabul etmiş olursunuz:\n\n\u2022 IP adresiniz ağdaki diğer kullanıcılara görünür hale gelecektir\n\u2022 Eriştiğiniz içerikten yalnızca siz sorumlusunuz\n\u2022 Bulunduğunuz yerde bu içeriği yasal olarak izleme hakkınız olduğunu onaylayıyorsunuz\n\u2022 Despegue hiçbir P2P içeriği barındırmaz, dağıtmaz veya kontrol etmez\n\u2022 Despegue, P2P yayını kullanımınızdan doğabilecek hukuki sonuçlardan sorumlu değildir\n\nBu özelliği tamamen kendi riskinizle kullanırsınız. P2P, istediğiniz zaman Ayarlar\'dan kapatılabilir.</string>
     <string name="p2p_consent_enable">P2P\'yi Etkinleştir</string>
     <string name="p2p_consent_cancel">İptal</string>
     <string name="settings_p2p_title">P2P Yayın</string>
@@ -1198,7 +1198,7 @@
     <string name="library_delete_subtitle">Bu işlem listeyi ve içindeki tüm öğeleri Trakt hesabınızdan kaldırır.</string>
     <string name="library_delete_confirm">Sil</string>
     <string name="library_source_local">YEREL</string>
-    <string name="library_source_nuvio">NUVİO</string>
+    <string name="library_source_despegue">NUVİO</string>
     <string name="library_source_trakt">TRAKT</string>
     <string name="library_syncing_library">Kütüphane senkronize ediliyor\u2026</string>
     <string name="library_type_all">Tümü</string>
@@ -1318,7 +1318,7 @@
     <string name="catalog_see_all_empty_subtitle">Daha sonra başka bir alt alan türünü denemek de faydalı olacaktır.</string>
 
     <!-- LayoutSelectionScreen -->
-    <string name="layout_selection_welcome">Nuvio\'ya Hoş Geldiniz</string>
+    <string name="layout_selection_welcome">Despegue\'ya Hoş Geldiniz</string>
     <string name="layout_selection_subtitle">Ana sayfa düzeninizi seçin.</string>
     <string name="layout_selection_continue">Devam Et</string>
 
@@ -1327,10 +1327,10 @@
     <string name="update_downloading">İndiriliyor</string>
     <string name="update_download">İndir</string>
     <string name="update_downloading_ellipsis">İndiriliyor…</string>
-    <string name="update_unknown_sources">Nuvio\'nun indirdiği eklentileri yüklayabilmek adına `Bilinmeyen kaynaklar` veya `Dışarıdan yükleme` iznine ihtiyaç var.</string>
+    <string name="update_unknown_sources">Despegue\'nun indirdiği eklentileri yüklayabilmek adına `Bilinmeyen kaynaklar` veya `Dışarıdan yükleme` iznine ihtiyaç var.</string>
     <!-- AccountScreen -->
     <string name="account_title">Hesap</string>
-    <string name="account_sign_in_description">Kütüphanenizi, izleme ilerlemenizi, eklenti ve uzantılarınızı cihazlar arasında eşleyin. Trakt bağlı değilken Nuvio Sync kullanılır.</string>
+    <string name="account_sign_in_description">Kütüphanenizi, izleme ilerlemenizi, eklenti ve uzantılarınızı cihazlar arasında eşleyin. Trakt bağlı değilken Despegue Sync kullanılır.</string>
     <string name="account_sync_code_title">Eşleştirme Kodu</string>
     <string name="account_sync_code_description">Hesap oluşturmadan cihazlarınızı eşleyin.</string>
     <string name="account_linked_devices">Bağlı Cihazlar (%1$d)</string>
@@ -1504,7 +1504,7 @@
     <string name="cd_preview">Önizle</string>
     <string name="cd_test">Test et</string>
     <string name="cd_unlink">Bağlantıyı kes</string>
-    <string name="cd_nuvio_logo">NuvioTV</string>
+    <string name="cd_despegue_logo">DespegueTV</string>
     <string name="cd_trakt_logo">Trakt logosu</string>
     <string name="cd_trakt_qr">Trakt etkinleştirme QR kodu</string>
     <string name="cd_imdb">IMDb</string>
@@ -1515,7 +1515,7 @@
     <string name="cd_expand">%1$s öğesini genişlet</string>
     <string name="cd_collapse">%1$s öğesini daralt</string>
     <string name="cd_qr_login">QR giriş kodu</string>
-    <string name="cd_nuvio">Nuvio</string>
+    <string name="cd_despegue">Despegue</string>
 
     <!-- Debug -->
     <string name="debug_signin_success">Giriş başarılı</string>
@@ -1539,7 +1539,7 @@
     <string name="collections_paste_clipboard">Panodan Yapıştır</string>
     <string name="collections_validate">Doğrula</string>
     <string name="collections_paste_hint">JSON\'u buraya yapıştırın…</string>
-    <string name="collections_file_description">İndirilenler klasöründeki nuvio-collections.json dosyasını okur.</string>
+    <string name="collections_file_description">İndirilenler klasöründeki despegue-collections.json dosyasını okur.</string>
     <string name="collections_load_file">Dosyayı Yükle</string>
     <string name="collections_file_loaded">Dosya yüklendi (%1$d karakter)</string>
     <string name="collections_fetch_url">URL\'yi Getir</string>
@@ -1616,7 +1616,7 @@
     <string name="collections_editor_tmdb_collection_helper">Örnek: Star Wars Collection, Harry Potter Collection veya bir koleksiyon URL\'si.</string>
     <string name="collections_editor_tmdb_network_helper">Örnek ID\'ler: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Örnek: https://www.themoviedb.org/list/8504994 veya 8504994.</string>
-    <string name="collections_editor_tmdb_title_helper">Satır/sekme adı olarak gösterilir. Boş bırakırsanız, Nuvio kaynaktan otomatik olarak oluşturur.</string>
+    <string name="collections_editor_tmdb_title_helper">Satır/sekme adı olarak gösterilir. Boş bırakırsanız, Despegue kaynaktan otomatik olarak oluşturur.</string>
     <string name="collections_editor_tmdb_quick_genres">Hızlı Türler</string>
     <string name="collections_editor_tmdb_quick_languages">Hızlı Diller</string>
     <string name="collections_editor_tmdb_quick_countries">Hızlı Ülkeler</string>

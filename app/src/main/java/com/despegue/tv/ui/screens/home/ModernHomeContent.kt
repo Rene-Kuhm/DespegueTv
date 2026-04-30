@@ -1,0 +1,1155 @@
+@file:OptIn(
+    androidx.compose.foundation.ExperimentalFoundationApi::class,
+    androidx.compose.ui.ExperimentalComposeUiApi::class
+)
+
+package com.despegue.tv.ui.screens.home
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.BringIntoViewSpec
+import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.metrics.performance.PerformanceMetricsState
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.despegue.tv.R
+import androidx.tv.material3.Border
+import androidx.tv.material3.Card
+import androidx.tv.material3.CardDefaults
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Icon
+import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
+import coil3.compose.AsyncImage
+import coil3.imageLoader
+import coil3.memory.MemoryCache
+import coil3.request.ImageRequest
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import com.despegue.tv.domain.model.FocusedPosterTrailerPlaybackTarget
+import com.despegue.tv.domain.model.MetaPreview
+import com.despegue.tv.ui.components.ContinueWatchingCard
+import com.despegue.tv.ui.components.HeroCarousel
+import com.despegue.tv.ui.components.LoadingIndicator
+import com.despegue.tv.ui.components.ContinueWatchingOptionsDialog
+import com.despegue.tv.ui.components.MonochromePosterPlaceholder
+import com.despegue.tv.ui.components.TrailerPlayer
+import com.despegue.tv.LocalSidebarExpanded
+import com.despegue.tv.LocalContentFocusRequester
+import com.despegue.tv.ui.theme.DespegueColors
+import com.despegue.tv.ui.util.dpadVerticalFastScroll
+import kotlinx.coroutines.delay
+import android.view.KeyEvent as AndroidKeyEvent
+import kotlin.math.abs
+import kotlinx.coroutines.flow.distinctUntilChanged
+
+
+private const val MODERN_HERO_RAPID_NAV_THRESHOLD_MS = 130L
+private const val MODERN_HERO_RAPID_NAV_SETTLE_MS = 170L
+
+private fun buildPrefetchRequest(
+    context: android.content.Context,
+    url: String,
+    widthPx: Int,
+    heightPx: Int
+): ImageRequest = ImageRequest.Builder(context)
+    .data(url)
+    .size(width = widthPx, height = heightPx)
+    .build()
+
+@Composable
+fun ModernHomeContent(
+    uiState: HomeUiState,
+    focusState: HomeScreenFocusState,
+    enrichingItemId: String? = null,
+    lastEnrichedPreview: MetaPreview? = null,
+    enrichedPreviews: Map<String, MetaPreview> = emptyMap(),
+    trailerPreviewUrls: Map<String, String>,
+    trailerPreviewAudioUrls: Map<String, String>,
+    onNavigateToDetail: (String, String, String) -> Unit,
+    onContinueWatchingClick: (ContinueWatchingItem) -> Unit,
+    onContinueWatchingStartFromBeginning: (ContinueWatchingItem) -> Unit = {},
+    onContinueWatchingPlayManually: (ContinueWatchingItem) -> Unit = {},
+    showContinueWatchingManualPlayOption: Boolean = false,
+    onRequestTrailerPreview: (String, String, String?, String) -> Unit,
+    onLoadMoreCatalog: (String, String, String) -> Unit,
+    onRemoveContinueWatching: (String, Int?, Int?, Boolean) -> Unit,
+    isCatalogItemWatched: (MetaPreview) -> Boolean = { false },
+    onCatalogItemLongPress: (MetaPreview, String) -> Unit = { _, _ -> },
+    onNavigateToFolderDetail: (String, String) -> Unit = { _, _ -> },
+    onItemFocus: (MetaPreview) -> Unit = {},
+    onPreloadAdjacentItem: (MetaPreview) -> Unit = {},
+    onSaveFocusState: (Int, Int, Int, Int, Map<String, Int>) -> Unit,
+    scrollToTopTrigger: Int = 0,
+    onRequestLazyCatalogLoad: (String) -> Unit = {}
+) {
+    val defaultBringIntoViewSpec = LocalBringIntoViewSpec.current
+    val isSidebarExpanded = LocalSidebarExpanded.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val useLandscapePosters = uiState.modernLandscapePostersEnabled
+    val fullScreenBackdrop = uiState.modernHeroFullScreenBackdropEnabled
+    val isLandscapeModern = useLandscapePosters
+    val expandControlAvailable = !isLandscapeModern
+    val trailerPlaybackTarget = uiState.focusedPosterBackdropTrailerPlaybackTarget
+    val effectiveAutoplayEnabled =
+        uiState.focusedPosterBackdropTrailerEnabled &&
+            (isLandscapeModern || uiState.focusedPosterBackdropExpandEnabled)
+    val landscapeExpandedCardMode =
+        isLandscapeModern &&
+            effectiveAutoplayEnabled &&
+            trailerPlaybackTarget == FocusedPosterTrailerPlaybackTarget.EXPANDED_CARD
+    val effectiveExpandEnabled =
+        (uiState.focusedPosterBackdropExpandEnabled && expandControlAvailable) ||
+            landscapeExpandedCardMode
+    val shouldActivateFocusedPosterFlow =
+        effectiveExpandEnabled ||
+            (effectiveAutoplayEnabled &&
+                trailerPlaybackTarget == FocusedPosterTrailerPlaybackTarget.HERO_MEDIA)
+    val presentation = uiState.modernHomePresentation
+    val carouselRows = presentation.rows
+
+    // Show spinner when collections are ready but catalogs haven't arrived
+    // yet — prevents collections from grabbing focus before catalogs
+    // appear above them.  Only waits when addons are installed (meaning
+    // catalogs are expected to load).
+    val hasCollections = remember(uiState.homeRows) {
+        uiState.homeRows.any { it is HomeRow.CollectionRow }
+    }
+    val hasCatalogs = uiState.catalogRows.isNotEmpty()
+    if (hasCollections && !hasCatalogs && uiState.installedAddonsCount > 0 && uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LoadingIndicator()
+        }
+        return
+    }
+
+    if (carouselRows.isEmpty()) {
+        // No carousel rows but hero items may exist — show standalone hero
+        if (uiState.heroSectionEnabled && uiState.heroItems.isNotEmpty()) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                HeroCarousel(
+                    items = uiState.heroItems,
+                    onItemClick = { item ->
+                        onNavigateToDetail(item.id, item.apiType, "")
+                    },
+                    onItemFocus = onItemFocus
+                )
+            }
+        }
+        return
+    }
+    val carouselLookups = presentation.lookups
+    val rowIndexByKey = carouselLookups.rowIndexByKey
+    val rowByKey = carouselLookups.rowByKey
+    val rowKeyByGlobalRowIndex = carouselLookups.rowKeyByGlobalRowIndex
+    val firstHeroPreviewByRow = carouselLookups.firstHeroPreviewByRow
+    val fallbackBackdropByRow = carouselLookups.fallbackBackdropByRow
+    val activeRowKeys = carouselLookups.activeRowKeys
+    val activeItemKeysByRow = carouselLookups.activeItemKeysByRow
+    val activeCatalogItemIds = carouselLookups.activeCatalogItemIds
+    val verticalRowListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = focusState.verticalScrollIndex,
+        initialFirstVisibleItemScrollOffset = focusState.verticalScrollOffset
+    )
+    val isVerticalRowsScrolling by remember(verticalRowListState) {
+        derivedStateOf { verticalRowListState.isScrollInProgress }
+    }
+
+    // Scroll to top when triggered from sidebar Home button.
+    LaunchedEffect(scrollToTopTrigger) {
+        if (scrollToTopTrigger > 0) {
+            verticalRowListState.scrollToItem(0, 0)
+        }
+    }
+
+    // Tag JankStats with key UI states so jank reports are actionable.
+    val currentView = LocalView.current
+    val metricsHolder = PerformanceMetricsState.getHolderForHierarchy(currentView)
+    LaunchedEffect(isVerticalRowsScrolling) {
+        metricsHolder.state?.putState("HomeScrolling", isVerticalRowsScrolling.toString())
+    }
+    LaunchedEffect(enrichingItemId) {
+        metricsHolder.state?.putState("HeroEnriching", (enrichingItemId != null).toString())
+    }
+
+    val uiCaches = remember { ModernHomeUiCaches() }
+    val focusedItemByRow = uiCaches.focusedItemByRow
+    val itemFocusRequesters = uiCaches.itemFocusRequesters
+    val rowListStates = uiCaches.rowListStates
+    val loadMoreRequestedTotals = uiCaches.loadMoreRequestedTotals
+    // Holder for hot-path focus tracking — lambdas read through reference, no stale closure
+    val focusHolder = remember {
+        object {
+            var activeRowKey: String? = null
+            var activeItemIndex: Int = 0
+        }
+    }
+    var activeRowKey by remember { mutableStateOf<String?>(null) }
+    var activeItemIndex by remember { mutableIntStateOf(0) }
+    // Tracks the row key that was auto-selected on initial load.
+    // Used to detect if the user has manually navigated away.
+    var initialAutoSelectedKey by remember { mutableStateOf<String?>(null) }
+    var pendingRowFocusKey by remember { mutableStateOf<String?>(null) }
+    var pendingRowFocusIndex by remember { mutableStateOf<Int?>(null) }
+    var pendingRowFocusNonce by remember { mutableIntStateOf(0) }
+    // Track row keys that are currently placeholders (empty items + isLoading).
+    val placeholderRowKeysRef = remember { mutableSetOf<String>() }
+    var heroItem by remember {
+        val initialHero = carouselRows.firstOrNull()?.items?.firstOrNull()?.heroPreview
+        mutableStateOf<HeroPreview?>(initialHero)
+    }
+    val heroTransitioningRef = remember { java.util.concurrent.atomic.AtomicBoolean(false) }
+    var restoredFromSavedState by remember { mutableStateOf(false) }
+    var optionsItem by remember { mutableStateOf<ContinueWatchingItem?>(null) }
+    val lastFocusedContinueWatchingIndexRef = remember { java.util.concurrent.atomic.AtomicInteger(-1) }
+    val lastHeroNavigationAtMsRef = remember { java.util.concurrent.atomic.AtomicLong(0L) }
+    val heroFocusSettleDelayMsRef = remember { java.util.concurrent.atomic.AtomicLong(MODERN_HERO_FOCUS_DEBOUNCE_MS) }
+    // Surfaced from [Modifier.dpadVerticalFastScroll] so cards inside the
+    // LazyColumn can hide their focus chrome while the list is being dragged
+    // by a held DPAD_UP / DPAD_DOWN (see [LocalFastScrollActive] below).
+    var isFastScrolling by remember { mutableStateOf(false) }
+    var focusedCatalogSelection by remember { mutableStateOf<FocusedCatalogSelection?>(null) }
+    var lastRequestedTrailerFocusKey by remember { mutableStateOf<String?>(null) }
+    var expandedCatalogFocusKey by remember { mutableStateOf<String?>(null) }
+    var focusedHeroMediaNonce by remember { mutableIntStateOf(0) }
+    var endedCollectionHeroVideoPlaybackKey by remember { mutableStateOf<String?>(null) }
+    var expansionInteractionNonce by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(
+        focusedCatalogSelection?.focusKey,
+        expansionInteractionNonce,
+        shouldActivateFocusedPosterFlow,
+        trailerPlaybackTarget,
+        uiState.focusedPosterBackdropExpandDelaySeconds,
+        isVerticalRowsScrolling
+    ) {
+        expandedCatalogFocusKey = null
+        if (!shouldActivateFocusedPosterFlow) return@LaunchedEffect
+        if (isVerticalRowsScrolling) return@LaunchedEffect
+        val selection = focusedCatalogSelection ?: return@LaunchedEffect
+        if (selection.payload !is ModernPayload.Catalog) return@LaunchedEffect
+        delay(uiState.focusedPosterBackdropExpandDelaySeconds.coerceAtLeast(0) * 1000L)
+        if (!lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return@LaunchedEffect
+        if (shouldActivateFocusedPosterFlow &&
+            !isVerticalRowsScrolling &&
+            focusedCatalogSelection?.focusKey == selection.focusKey
+        ) {
+            expandedCatalogFocusKey = selection.focusKey
+        }
+    }
+
+    LaunchedEffect(
+        focusedCatalogSelection?.focusKey,
+        effectiveAutoplayEnabled,
+        isVerticalRowsScrolling
+    ) {
+        if (!effectiveAutoplayEnabled) {
+            lastRequestedTrailerFocusKey = null
+            return@LaunchedEffect
+        }
+        if (isVerticalRowsScrolling) {
+            return@LaunchedEffect
+        }
+        val selection = focusedCatalogSelection ?: run {
+            lastRequestedTrailerFocusKey = null
+            return@LaunchedEffect
+        }
+        val payload = selection.payload as? ModernPayload.Catalog ?: run {
+            lastRequestedTrailerFocusKey = null
+            return@LaunchedEffect
+        }
+        if (selection.focusKey == lastRequestedTrailerFocusKey) {
+            return@LaunchedEffect
+        }
+        delay(150)
+        if (focusedCatalogSelection?.focusKey != selection.focusKey) return@LaunchedEffect
+        onRequestTrailerPreview(
+            payload.itemId,
+            payload.trailerTitle,
+            payload.trailerReleaseInfo,
+            payload.trailerApiType
+        )
+        lastRequestedTrailerFocusKey = selection.focusKey
+    }
+
+    LaunchedEffect(carouselRows, focusState.hasSavedFocus, focusState.focusedRowIndex, focusState.focusedItemIndex) {
+        focusedItemByRow.keys.retainAll(activeRowKeys)
+        itemFocusRequesters.keys.retainAll(activeRowKeys)
+        rowListStates.keys.retainAll(activeRowKeys)
+        loadMoreRequestedTotals.keys.retainAll(activeRowKeys)
+        carouselRows.forEach { row ->
+            val rowRequesters = itemFocusRequesters[row.key] ?: return@forEach
+            // Prune FocusRequester entries beyond current item count
+            val maxIndex = row.items.size
+            rowRequesters.keys.removeAll { key ->
+                val idx = key.removePrefix("${row.key}_").toIntOrNull()
+                idx != null && idx >= maxIndex
+            }
+        }
+        val staleSelection = focusedCatalogSelection?.let { selection ->
+            when (val payload = selection.payload) {
+                is ModernPayload.Catalog -> !payload.itemId.startsWith("__placeholder_") && payload.itemId !in activeCatalogItemIds
+                is ModernPayload.CollectionFolder -> carouselRows.none { row ->
+                    row.items.any { item ->
+                        (item.payload as? ModernPayload.CollectionFolder)?.focusKey == selection.focusKey
+                    }
+                }
+                is ModernPayload.ContinueWatching -> true
+            }
+        } ?: false
+        if (staleSelection) {
+            focusedCatalogSelection = null
+            expandedCatalogFocusKey = null
+        }
+        // After placeholder→data transition, update selection with real item
+        val currentSelection = focusedCatalogSelection
+        val currentCatalogPayload = currentSelection?.payload as? ModernPayload.Catalog
+        if (currentSelection != null && currentCatalogPayload != null && currentCatalogPayload.itemId.startsWith("__placeholder_")) {
+            val activeKey = focusHolder.activeRowKey
+            val activeIdx = focusHolder.activeItemIndex
+            val activeRow = activeKey?.let(rowByKey::get)
+            val realItem = activeRow?.items?.getOrNull(activeIdx)
+            val realPayload = realItem?.payload as? ModernPayload.Catalog
+            if (realPayload != null && !realPayload.itemId.startsWith("__placeholder_")) {
+                focusedCatalogSelection = FocusedCatalogSelection(
+                    focusKey = realPayload.focusKey,
+                    payload = realPayload
+                )
+                lastRequestedTrailerFocusKey = null
+                expandedCatalogFocusKey = null
+            }
+        }
+
+        carouselRows.forEach { row ->
+            if (row.items.isNotEmpty() && row.key !in focusedItemByRow) {
+                focusedItemByRow[row.key] = 0
+            }
+        }
+
+        if (!restoredFromSavedState && focusState.hasSavedFocus) {
+            val savedRowKey = when {
+                focusState.focusedRowIndex == -1 && uiState.continueWatchingItems.isNotEmpty() -> "continue_watching"
+                focusState.focusedRowIndex >= 0 -> rowKeyByGlobalRowIndex[focusState.focusedRowIndex]
+                else -> null
+            }
+
+            val resolvedRow = savedRowKey?.let(rowByKey::get) ?: carouselRows.first()
+            val resolvedIndex = focusState.focusedItemIndex
+                .coerceAtLeast(0)
+                .coerceAtMost((resolvedRow.items.size - 1).coerceAtLeast(0))
+
+            focusHolder.activeRowKey = resolvedRow.key
+            focusHolder.activeItemIndex = resolvedIndex
+            activeRowKey = resolvedRow.key
+            activeItemIndex = resolvedIndex
+            focusedItemByRow[resolvedRow.key] = resolvedIndex
+            heroItem = resolvedRow.items.getOrNull(resolvedIndex)?.heroPreview
+                ?: resolvedRow.items.firstOrNull()?.heroPreview
+            pendingRowFocusKey = resolvedRow.key
+            pendingRowFocusIndex = resolvedIndex
+            pendingRowFocusNonce++
+            restoredFromSavedState = true
+            return@LaunchedEffect
+        }
+
+        val hadActiveRow = focusHolder.activeRowKey != null
+        val existingActive = focusHolder.activeRowKey?.let(rowByKey::get)
+        val firstRow = carouselRows.first()
+        val userStillOnAutoSelected = initialAutoSelectedKey != null &&
+            focusHolder.activeRowKey == initialAutoSelectedKey
+        val autoSelectedStale = hadActiveRow && existingActive != null &&
+            existingActive.key != firstRow.key &&
+            rowIndexByKey.getOrDefault(existingActive.key, 0) > 0 &&
+            !restoredFromSavedState &&
+            !focusState.hasSavedFocus &&
+            userStillOnAutoSelected
+        val resolvedActive = when {
+            autoSelectedStale -> firstRow
+            existingActive != null -> existingActive
+            else -> firstRow
+        }
+        val resolvedIndex = focusedItemByRow[resolvedActive.key]
+            ?.coerceIn(0, (resolvedActive.items.size - 1).coerceAtLeast(0))
+            ?: 0
+        focusHolder.activeRowKey = resolvedActive.key
+        focusHolder.activeItemIndex = resolvedIndex
+        activeRowKey = resolvedActive.key
+        activeItemIndex = resolvedIndex
+        focusedItemByRow[resolvedActive.key] = resolvedIndex
+        heroItem = resolvedActive.items.getOrNull(resolvedIndex)?.heroPreview
+            ?: resolvedActive.items.firstOrNull()?.heroPreview
+        if (!focusState.hasSavedFocus && (!hadActiveRow || existingActive == null || autoSelectedStale)) {
+            initialAutoSelectedKey = resolvedActive.key
+            pendingRowFocusKey = resolvedActive.key
+            pendingRowFocusIndex = resolvedIndex
+            pendingRowFocusNonce++
+        }
+    }
+
+    LaunchedEffect(focusState.verticalScrollIndex, focusState.verticalScrollOffset) {
+        val targetIndex = focusState.verticalScrollIndex
+        val targetOffset = focusState.verticalScrollOffset
+        if (verticalRowListState.firstVisibleItemIndex == targetIndex &&
+            verticalRowListState.firstVisibleItemScrollOffset == targetOffset
+        ) {
+            return@LaunchedEffect
+        }
+        if (targetIndex > 0 || targetOffset > 0) {
+            verticalRowListState.scrollToItem(targetIndex, targetOffset)
+        }
+    }
+
+    val activeRow by remember(carouselRows, rowByKey, activeRowKey) {
+        derivedStateOf {
+            val activeKey = activeRowKey
+            if (activeKey == null) {
+                null
+            } else {
+                rowByKey[activeKey] ?: carouselRows.firstOrNull()
+            }
+        }
+    }
+    val clampedActiveItemIndex by remember(activeRow, activeItemIndex) {
+        derivedStateOf {
+            activeRow?.let { row ->
+                activeItemIndex.coerceIn(0, (row.items.size - 1).coerceAtLeast(0))
+            } ?: 0
+        }
+    }
+
+    LaunchedEffect(activeRow?.key, activeRow?.items?.size) {
+        val row = activeRow ?: return@LaunchedEffect
+        val clampedIndex = focusHolder.activeItemIndex.coerceIn(0, (row.items.size - 1).coerceAtLeast(0))
+        if (focusHolder.activeItemIndex != clampedIndex) {
+            focusHolder.activeItemIndex = clampedIndex
+            activeItemIndex = clampedIndex
+        }
+        focusedItemByRow[row.key] = clampedIndex
+    }
+
+    val activeHeroItemKey by remember(activeRow, clampedActiveItemIndex) {
+        derivedStateOf {
+            val row = activeRow ?: return@derivedStateOf null
+            row.items.getOrNull(clampedActiveItemIndex)?.key ?: row.items.firstOrNull()?.key
+        }
+    }
+    val latestHeroRow by rememberUpdatedState(activeRow)
+    val latestHeroIndex by rememberUpdatedState(clampedActiveItemIndex)
+    LaunchedEffect(activeHeroItemKey, isVerticalRowsScrolling) {
+        if (isVerticalRowsScrolling) return@LaunchedEffect
+        val targetHeroKey = activeHeroItemKey ?: return@LaunchedEffect
+        heroTransitioningRef.set(true)
+        val settleDelayMs = heroFocusSettleDelayMsRef.get()
+        delay(settleDelayMs)
+        if (isVerticalRowsScrolling) {
+            heroTransitioningRef.set(false)
+            return@LaunchedEffect
+        }
+        if (System.currentTimeMillis() - lastHeroNavigationAtMsRef.get() < settleDelayMs) {
+            heroTransitioningRef.set(false)
+            return@LaunchedEffect
+        }
+        val row = latestHeroRow ?: run { heroTransitioningRef.set(false); return@LaunchedEffect }
+        val latestKey = row.items.getOrNull(latestHeroIndex)?.key ?: row.items.firstOrNull()?.key
+        if (latestKey != targetHeroKey) {
+            heroTransitioningRef.set(false)
+            return@LaunchedEffect
+        }
+        val latestHero =
+            row.items.getOrNull(latestHeroIndex)?.heroPreview ?: row.items.firstOrNull()?.heroPreview
+        if (latestHero != null && heroItem != latestHero) {
+            heroItem = latestHero
+        }
+        heroTransitioningRef.set(false)
+    }
+    val latestActiveRow by rememberUpdatedState(activeRow)
+    val latestActiveItemIndex by rememberUpdatedState(clampedActiveItemIndex)
+    val latestCarouselRows by rememberUpdatedState(carouselRows)
+    val latestVerticalRowListState by rememberUpdatedState(verticalRowListState)
+    DisposableEffect(Unit) {
+        onDispose {
+            val row = latestActiveRow
+            val focusedRowIndex = row?.globalRowIndex ?: 0
+            val catalogRowScrollStates = latestCarouselRows
+                .filter { it.globalRowIndex >= 0 }
+                .associate { rowState -> rowState.key to (focusedItemByRow[rowState.key] ?: 0) }
+
+            onSaveFocusState(
+                latestVerticalRowListState.firstVisibleItemIndex,
+                latestVerticalRowListState.firstVisibleItemScrollOffset,
+                focusedRowIndex,
+                latestActiveItemIndex,
+                catalogRowScrollStates
+            )
+        }
+    }
+
+    val portraitBaseWidth = uiState.posterCardWidthDp.dp
+    val portraitBaseHeight = uiState.posterCardHeightDp.dp
+    val portraitModernPosterScale = 1.08f
+    val landscapeModernPosterScale = 1.34f
+    val portraitCatalogCardWidth = portraitBaseWidth * 0.84f * portraitModernPosterScale
+    val portraitCatalogCardHeight = portraitBaseHeight * 0.84f * portraitModernPosterScale
+    val landscapeCatalogCardWidth = portraitBaseWidth * 1.24f * landscapeModernPosterScale
+    val landscapeCatalogCardHeight = landscapeCatalogCardWidth / 1.77f
+    val continueWatchingScale = 1.34f
+    val continueWatchingCardWidth = portraitBaseWidth * 1.24f * continueWatchingScale
+    val continueWatchingCardHeight = continueWatchingCardWidth / 1.77f
+
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val posterCardCornerRadius = remember(uiState.posterCardCornerRadiusDp) { uiState.posterCardCornerRadiusDp.dp }
+        val rowHorizontalPadding = 52.dp
+
+        val activeCarouselItem = remember(activeRow, clampedActiveItemIndex) {
+            activeRow?.items?.getOrNull(clampedActiveItemIndex)
+        }
+        val activeItemId = activeCarouselItem?.metaPreview?.id
+        val enrichmentActive = enrichingItemId != null && enrichingItemId == activeItemId
+        // When enrichment is active use heroItem (frozen).  When done,
+        // prefer the freshly enriched MetaPreview (from lastEnrichedPreview)
+        // over the stale presentation data — the presentation pipeline
+        // skips rebuilds for item-level enrichment changes.
+        val enrichedHero = remember(enrichedPreviews, activeItemId) {
+            val enrichedItem = activeItemId?.let { enrichedPreviews[it] }
+            if (enrichedItem != null) {
+                HeroPreview(
+                    title = enrichedItem.name,
+                    logo = enrichedItem.logo,
+                    description = enrichedItem.description,
+                    contentTypeText = activeCarouselItem?.heroPreview?.contentTypeText,
+                    isSeries = isSeriesType(enrichedItem.apiType),
+                    yearText = activeCarouselItem?.heroPreview?.yearText,
+                    runtimeText = activeCarouselItem?.heroPreview?.runtimeText,
+                    imdbText = enrichedItem.imdbRating?.let { String.format("%.1f", it) },
+                    ageRatingText = enrichedItem.ageRating,
+                    statusText = enrichedItem.status,
+                    countryText = enrichedItem.country,
+                    languageText = enrichedItem.language?.uppercase(),
+                    genres = enrichedItem.genres.take(3),
+                    poster = enrichedItem.poster,
+                    backdrop = enrichedItem.backdropUrl,
+                    imageUrl = activeCarouselItem?.heroPreview?.imageUrl,
+                    frozenBackdropUrl = activeCarouselItem?.heroPreview?.frozenBackdropUrl,
+                    frozenLogoUrl = activeCarouselItem?.heroPreview?.frozenLogoUrl
+                )
+            } else null
+        }
+        val resolvedHero = when {
+            enrichmentActive -> heroItem
+            enrichedHero != null -> enrichedHero
+            else -> activeCarouselItem?.heroPreview ?: heroItem
+        }
+        val activeRowFallbackBackdrop = remember(activeRow?.key, activeRow?.items?.size) {
+            activeRow?.items?.firstNotNullOfOrNull { item ->
+                item.heroPreview.backdrop?.takeIf { it.isNotBlank() }
+            }
+        }
+        val heroBackdrop = remember(resolvedHero, activeRowFallbackBackdrop, heroItem) {
+            firstNonBlank(
+                resolvedHero?.backdrop,
+                resolvedHero?.imageUrl,
+                resolvedHero?.poster,
+                if (heroItem == null) activeRowFallbackBackdrop else null
+            )
+        }
+        val expandedFocusedSelection = remember(focusedCatalogSelection, expandedCatalogFocusKey) {
+            focusedCatalogSelection
+                ?.takeIf { it.focusKey == expandedCatalogFocusKey }
+                ?.takeIf { it.payload is ModernPayload.Catalog }
+        }
+        val heroTrailerUrl by remember(expandedFocusedSelection) {
+            derivedStateOf {
+                (expandedFocusedSelection?.payload as? ModernPayload.Catalog)
+                    ?.itemId
+                    ?.let { trailerPreviewUrls[it] }
+            }
+        }
+        val heroTrailerAudioUrl by remember(expandedFocusedSelection) {
+            derivedStateOf {
+                (expandedFocusedSelection?.payload as? ModernPayload.Catalog)
+                    ?.itemId
+                    ?.let { trailerPreviewAudioUrls[it] }
+            }
+        }
+        val expandedCatalogTrailerUrl = heroTrailerUrl
+        val expandedCatalogTrailerAudioUrl = heroTrailerAudioUrl
+        val collectionHeroVideoUrl = (focusedCatalogSelection?.payload as? ModernPayload.CollectionFolder)?.heroVideoUrl
+        val collectionHeroVideoPlaybackKey = remember(
+            focusedCatalogSelection?.focusKey,
+            collectionHeroVideoUrl,
+            focusedHeroMediaNonce
+        ) {
+            val focusKey = focusedCatalogSelection?.focusKey
+            val url = collectionHeroVideoUrl?.takeIf { it.isNotBlank() }
+            if (focusKey != null && url != null) "$focusKey::$focusedHeroMediaNonce::$url" else null
+        }
+        val shouldPlayCatalogHeroTrailer = remember(
+            effectiveAutoplayEnabled,
+            trailerPlaybackTarget,
+            heroTrailerUrl,
+            isVerticalRowsScrolling,
+            isSidebarExpanded
+        ) {
+            effectiveAutoplayEnabled &&
+                !isSidebarExpanded &&
+                !isVerticalRowsScrolling &&
+                trailerPlaybackTarget == FocusedPosterTrailerPlaybackTarget.HERO_MEDIA &&
+                !heroTrailerUrl.isNullOrBlank()
+        }
+        val shouldPlayCollectionHeroVideo = remember(
+            collectionHeroVideoUrl,
+            collectionHeroVideoPlaybackKey,
+            endedCollectionHeroVideoPlaybackKey,
+            isVerticalRowsScrolling,
+            isSidebarExpanded
+        ) {
+            !isSidebarExpanded &&
+                !isVerticalRowsScrolling &&
+                !collectionHeroVideoUrl.isNullOrBlank() &&
+                collectionHeroVideoPlaybackKey != null &&
+                endedCollectionHeroVideoPlaybackKey != collectionHeroVideoPlaybackKey
+        }
+        val heroMediaUrl = if (shouldPlayCollectionHeroVideo) collectionHeroVideoUrl else heroTrailerUrl
+        val heroMediaAudioUrl = if (shouldPlayCollectionHeroVideo) null else heroTrailerAudioUrl
+        val heroMediaPlaybackKey = if (shouldPlayCollectionHeroVideo) collectionHeroVideoPlaybackKey else heroTrailerUrl
+        val shouldPlayHeroTrailer = shouldPlayCatalogHeroTrailer || shouldPlayCollectionHeroVideo
+        val heroMediaMuted = shouldPlayCollectionHeroVideo || uiState.focusedPosterBackdropTrailerMuted
+        var heroTrailerFirstFrameRendered by remember(heroMediaUrl, collectionHeroVideoPlaybackKey) { mutableStateOf(false) }
+        LaunchedEffect(shouldPlayHeroTrailer) {
+            if (!shouldPlayHeroTrailer) {
+                heroTrailerFirstFrameRendered = false
+            }
+        }
+
+        val isTrailerPlayingFullscreen = fullScreenBackdrop && shouldPlayCatalogHeroTrailer && heroTrailerFirstFrameRendered
+        BackHandler(enabled = isTrailerPlayingFullscreen) {
+            focusedCatalogSelection = null
+            expandedCatalogFocusKey = null
+        }
+        val liveHeroSceneState = remember(
+            heroBackdrop,
+            resolvedHero,
+            enrichmentActive,
+            shouldPlayHeroTrailer,
+            heroTrailerFirstFrameRendered,
+            heroMediaUrl,
+            heroMediaAudioUrl,
+            heroMediaPlaybackKey,
+            heroMediaMuted,
+            fullScreenBackdrop
+        ) {
+            ModernHeroSceneState(
+                heroBackdrop = heroBackdrop,
+                preview = if (enrichmentActive) null else resolvedHero,
+                enrichmentActive = enrichmentActive,
+                shouldPlayTrailer = shouldPlayHeroTrailer,
+                trailerFirstFrameRendered = heroTrailerFirstFrameRendered,
+                trailerUrl = heroMediaUrl,
+                trailerAudioUrl = heroMediaAudioUrl,
+                trailerPlaybackKey = heroMediaPlaybackKey,
+                trailerMuted = heroMediaMuted,
+                fullScreenBackdrop = fullScreenBackdrop
+            )
+        }
+        var stableHeroSceneState by remember { mutableStateOf(liveHeroSceneState) }
+        LaunchedEffect(liveHeroSceneState, isVerticalRowsScrolling) {
+            if (!isVerticalRowsScrolling || stableHeroSceneState.preview == null) {
+                stableHeroSceneState = liveHeroSceneState
+            }
+        }
+        val heroSceneState = if (isVerticalRowsScrolling) stableHeroSceneState else liveHeroSceneState
+
+        val prefetchContext = LocalContext.current
+        LaunchedEffect(heroSceneState.heroBackdrop) {
+            HeroBackdropState.update(heroSceneState.heroBackdrop)
+        }
+        if (!fullScreenBackdrop && !heroSceneState.heroBackdrop.isNullOrBlank()) {
+            val screenConf = LocalConfiguration.current
+            val density = LocalDensity.current
+            val screenWPx = remember(screenConf, density) { with(density) { screenConf.screenWidthDp.dp.roundToPx() } }
+            val screenHPx = remember(screenConf, density) { with(density) { screenConf.screenHeightDp.dp.roundToPx() } }
+            val heroUrl = heroSceneState.heroBackdrop!!
+            val req = remember(prefetchContext, heroUrl, screenWPx, screenHPx) {
+                buildPrefetchRequest(prefetchContext, heroUrl, screenWPx, screenHPx)
+            }
+            LaunchedEffect(req) {
+                prefetchContext.imageLoader.enqueue(req)
+            }
+        }
+
+        val catalogBottomPadding = 0.dp
+        val heroToCatalogGap = 16.dp
+        val rowTitleBottom = 14.dp
+        val rowsViewportHeightFraction = if (useLandscapePosters) 0.49f else 0.52f
+        val rowsViewportHeight = maxHeight * rowsViewportHeightFraction
+        val localDensity = LocalDensity.current
+        val rowTitleLineHeight = MaterialTheme.typography.titleMedium.lineHeight
+        val rowTitleHeight = with(localDensity) {
+            runCatching { rowTitleLineHeight.toDp() }
+                .getOrDefault(24.dp)
+        }
+        val heroBackdropHeight = (maxHeight - rowsViewportHeight + rowTitleHeight + rowTitleBottom)
+            .coerceAtMost(maxHeight)
+        val verticalRowBringIntoViewSpec = remember(localDensity, defaultBringIntoViewSpec) {
+            val topInsetPx = with(localDensity) { MODERN_ROW_HEADER_FOCUS_INSET.toPx() }
+            @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+            object : BringIntoViewSpec {
+                override val scrollAnimationSpec: AnimationSpec<Float> =
+                    defaultBringIntoViewSpec.scrollAnimationSpec
+
+                override fun calculateScrollDistance(
+                    offset: Float,
+                    size: Float,
+                    containerSize: Float
+                ): Float = offset - topInsetPx
+            }
+        }
+        val bgColor = DespegueColors.Background
+        val contentFocusRequester = LocalContentFocusRequester.current
+        val focusRestorerRequester by remember(carouselRows, uiCaches) {
+            derivedStateOf {
+                val rowKey = activeRowKey
+                if (rowKey != null) {
+                    val row = carouselRows.firstOrNull { it.key == rowKey }
+                    val rowListState = uiCaches.rowListStates[rowKey]
+                    val firstVisibleIndex = rowListState?.firstVisibleItemIndex ?: 0
+                    val safeIndex = firstVisibleIndex.coerceIn(0, ((row?.items?.size ?: 1) - 1).coerceAtLeast(0))
+                    val stableKey = "${rowKey}_$safeIndex"
+                    uiCaches.itemFocusRequesters[rowKey]?.get(stableKey) ?: FocusRequester.Default
+                } else FocusRequester.Default
+            }
+        }
+        val heroMediaWidthPx = remember(maxWidth, localDensity, fullScreenBackdrop) {
+            with(localDensity) {
+                if (fullScreenBackdrop) maxWidth.roundToPx()
+                else (maxWidth * MODERN_HERO_MEDIA_WIDTH_FRACTION).roundToPx()
+            }
+        }
+        val heroMediaHeightPx = remember(heroBackdropHeight, maxHeight, localDensity, fullScreenBackdrop) {
+            with(localDensity) {
+                if (fullScreenBackdrop) maxHeight.roundToPx()
+                else heroBackdropHeight.roundToPx()
+            }
+        }
+
+        val heroMediaModifier = remember(heroBackdropHeight, maxHeight, fullScreenBackdrop) {
+            if (fullScreenBackdrop) {
+                Modifier
+                    .align(Alignment.TopStart)
+                    .fillMaxWidth()
+                    .height(maxHeight)
+            } else {
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 56.dp)
+                    .fillMaxWidth(MODERN_HERO_MEDIA_WIDTH_FRACTION)
+                    .height(heroBackdropHeight)
+            }
+        }
+
+        ModernHeroScene(
+            state = heroSceneState,
+            bgColor = bgColor,
+            modifier = heroMediaModifier,
+            requestWidthPx = heroMediaWidthPx,
+            requestHeightPx = heroMediaHeightPx,
+            onTrailerEnded = {
+                val playbackKey = collectionHeroVideoPlaybackKey
+                if (shouldPlayCollectionHeroVideo && playbackKey != null) {
+                    endedCollectionHeroVideoPlaybackKey = playbackKey
+                } else {
+                    expandedCatalogFocusKey = null
+                }
+            },
+            onFirstFrameRendered = { heroTrailerFirstFrameRendered = true },
+        )
+        val trailerContentAlpha by animateFloatAsState(
+            targetValue = if (fullScreenBackdrop && shouldPlayCatalogHeroTrailer && heroTrailerFirstFrameRendered) 0f else 1f,
+            animationSpec = tween(durationMillis = 480),
+            label = "trailerContentFade"
+        )
+
+        HeroTitleBlock(
+            preview = heroSceneState.preview,
+            enrichmentActive = heroSceneState.enrichmentActive,
+            portraitMode = !useLandscapePosters,
+            trailerPlaying = heroSceneState.fullScreenBackdrop &&
+                shouldPlayCatalogHeroTrailer &&
+                heroSceneState.trailerFirstFrameRendered,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = rowHorizontalPadding,
+                    end = 48.dp,
+                    bottom = catalogBottomPadding + rowsViewportHeight + heroToCatalogGap
+                )
+                .fillMaxWidth(MODERN_HERO_TEXT_WIDTH_FRACTION)
+        )
+
+        val verticalPrefetchContext = LocalContext.current
+        val verticalPrefetchImageLoader = verticalPrefetchContext.imageLoader
+        val verticalPrefetchDensity = LocalDensity.current
+        LaunchedEffect(verticalPrefetchImageLoader, verticalPrefetchDensity) {
+            val prefetchAheadRows = 3
+            val prefetchItemsPerRow = 8
+            snapshotFlow {
+                verticalRowListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            }.distinctUntilChanged().collect { lastVisibleRowIndex ->
+                val rows = carouselRows
+                for (rowOffset in 1..prefetchAheadRows) {
+                    val row = rows.getOrNull(lastVisibleRowIndex + rowOffset) ?: continue
+                    for (i in 0 until minOf(prefetchItemsPerRow, row.items.size)) {
+                        val item = row.items[i]
+                        val url = item.imageUrl ?: continue
+                        val metrics = item.catalogCardMetrics(
+                            useLandscapePosters = useLandscapePosters,
+                            portraitCardWidth = portraitCatalogCardWidth,
+                            portraitCardHeight = portraitCatalogCardHeight,
+                            landscapeCardWidth = landscapeCatalogCardWidth,
+                            landscapeCardHeight = landscapeCatalogCardHeight
+                        )
+                        val wPx = with(verticalPrefetchDensity) { metrics.width.roundToPx() }
+                        val hPx = with(verticalPrefetchDensity) { metrics.height.roundToPx() }
+                        val cacheKey = "${url}_${wPx}x${hPx}"
+                        if (verticalPrefetchImageLoader.memoryCache?.get(MemoryCache.Key(cacheKey)) != null) continue
+                        verticalPrefetchImageLoader.enqueue(
+                            ImageRequest.Builder(verticalPrefetchContext)
+                                .data(url)
+                                .memoryCacheKey(cacheKey)
+                                .size(width = wPx, height = hPx)
+                                .build()
+                        )
+                    }
+                }
+            }
+        }
+
+        // Lazy catalog loading: trigger load after scroll settles
+        val latestOnRequestLazyCatalogLoad = rememberUpdatedState(onRequestLazyCatalogLoad)
+        val latestCarouselRowsForLazy = rememberUpdatedState(carouselRows)
+        LaunchedEffect(verticalRowListState) {
+            val prefetchAheadForLazy = 2
+            snapshotFlow {
+                val scrolling = verticalRowListState.isScrollInProgress
+                val info = verticalRowListState.layoutInfo
+                val firstVisible = info.visibleItemsInfo.firstOrNull()?.index ?: -1
+                val lastVisible = info.visibleItemsInfo.lastOrNull()?.index ?: -1
+                Triple(scrolling, firstVisible, lastVisible)
+            }.collect { (scrolling, firstVisible, lastVisible) ->
+                if (scrolling || lastVisible < 0) return@collect
+                // Small settle delay so rapid D-pad presses don't fire loads
+                delay(150)
+                // Re-check after delay — if scrolling resumed, skip
+                if (verticalRowListState.isScrollInProgress) return@collect
+                val rows = latestCarouselRowsForLazy.value
+                for (idx in firstVisible.coerceAtLeast(0)..(lastVisible + prefetchAheadForLazy)) {
+                    val row = rows.getOrNull(idx) ?: continue
+                    if (row.isLoading && row.items.firstOrNull()?.key?.startsWith("placeholder_") == true) {
+                        latestOnRequestLazyCatalogLoad.value(row.key)
+                    }
+                }
+            }
+        }
+
+        CompositionLocalProvider(
+            LocalBringIntoViewSpec provides verticalRowBringIntoViewSpec,
+            LocalVerticalRowsScrolling provides (uiState.memoryOnlyVerticalScroll && isVerticalRowsScrolling),
+            LocalFastScrollActive provides isFastScrolling
+        ) {
+            LazyColumn(
+                state = verticalRowListState,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .height(rowsViewportHeight)
+                    .padding(bottom = catalogBottomPadding)
+                    .clipToBounds()
+                    .graphicsLayer { alpha = trailerContentAlpha }
+                    .focusRequester(contentFocusRequester)
+                    .focusRestorer { focusRestorerRequester }
+                    .dpadVerticalFastScroll(
+                        scrollableState = verticalRowListState,
+                        onFastScrollingChanged = { isFastScrolling = it },
+                        // Vertical bottom padding on this LazyColumn is viewport-sized so
+                        // the hero artwork stays visible beneath the first row. That means
+                        // scrolling "past" the last row would push it above the viewport
+                        // into the padding and the landing bringIntoView would yank the
+                        // list backwards — the user reads that as "the list got thrown
+                        // back up." Halt downward drag the moment the last row is fully
+                        // in view so focus lands on it cleanly instead.
+                        shouldHaltForward = {
+                            val info = verticalRowListState.layoutInfo
+                            val lastIdx = carouselRows.size - 1
+                            val lastVisible = info.visibleItemsInfo.lastOrNull { it.index == lastIdx }
+                            lastIdx >= 0 && lastVisible != null &&
+                                lastVisible.offset + lastVisible.size <= info.viewportEndOffset
+                        },
+                        resolveVerticalLanding = { sign ->
+                            // Pick the row to land on, then within that row the item key
+                            // the user was last focused on (tracked in [focusedItemByRow]).
+                            // The uiCaches requester maps (rowKey, itemKey) -> the actual
+                            // FocusRequester attached to the card.
+                            val layoutInfo = verticalRowListState.layoutInfo
+                            val visibleRows = layoutInfo.visibleItemsInfo
+                            val lastIdx = carouselRows.size - 1
+                            val viewportEnd = layoutInfo.viewportEndOffset
+                            // If the last row has fully entered the viewport from the
+                            // bottom, land on it directly. Without this the generic
+                            // "first fully visible" heuristic would pick a row near the
+                            // top and the follow-up bringIntoView would yank the list.
+                            val lastRowAtBottom = lastIdx >= 0 &&
+                                visibleRows.lastOrNull { it.index == lastIdx }?.let {
+                                    it.offset + it.size <= viewportEnd
+                                } == true
+                            // Upward drag (DPAD_UP): prefer the topmost visible row even
+                            // if its top edge is slightly above the viewport, because
+                            // that's the row the user was uncovering when they let go.
+                            // Skipping it onto the row below reads as "focus landed on
+                            // the previous row instead of the next one I was reaching
+                            // for." Accept it only if at least half visible so a 5 %
+                            // sliver doesn't trigger a large backwards bringIntoView snap.
+                            val upwardTopRow = if (sign < 0) {
+                                visibleRows.firstOrNull()?.takeIf {
+                                    it.offset > -it.size / 2
+                                }
+                            } else null
+                            val targetRowIndex = when {
+                                lastRowAtBottom -> lastIdx
+                                upwardTopRow != null -> upwardTopRow.index
+                                else ->
+                                    visibleRows.firstOrNull { it.offset >= 0 }?.index
+                                        ?: visibleRows.firstOrNull()?.index
+                                        ?: verticalRowListState.firstVisibleItemIndex
+                            }
+                            val targetRow = carouselRows.getOrNull(targetRowIndex)
+                            if (targetRow == null) null
+                            else {
+                                val savedIdx = (focusedItemByRow[targetRow.key] ?: 0)
+                                    .coerceIn(0, (targetRow.items.size - 1).coerceAtLeast(0))
+                                val targetStableKey = "${targetRow.key}_$savedIdx"
+                                uiCaches.requesterFor(targetRow.key, targetStableKey)
+                            }
+                        },
+                    ),
+                contentPadding = PaddingValues(bottom = rowsViewportHeight),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                itemsIndexed(
+                    items = carouselRows,
+                    key = { _, row -> row.key },
+                    contentType = { _, row -> row.apiType ?: "modern_home_row" } // Differentiate horizontal rows by type
+                ) { _, row ->
+                            val stableOnContinueWatchingOptions = remember(Unit) {
+                                { item: ContinueWatchingItem -> optionsItem = item }
+                            }
+                            val stableOnRowItemFocused = remember(Unit) {
+                                { rowKey: String, index: Int, isContinueWatchingRow: Boolean ->
+                                    val rowBecameActive = focusHolder.activeRowKey != rowKey
+                                    val itemChanged = focusHolder.activeItemIndex != index
+                                    if (rowBecameActive || itemChanged) {
+                                        val now = System.currentTimeMillis()
+                                        val timeSinceLastHeroNav = now - lastHeroNavigationAtMsRef.get()
+                                        heroFocusSettleDelayMsRef.set(
+                                            if (lastHeroNavigationAtMsRef.get() != 0L &&
+                                                timeSinceLastHeroNav in 1 until MODERN_HERO_RAPID_NAV_THRESHOLD_MS
+                                            ) MODERN_HERO_RAPID_NAV_SETTLE_MS
+                                            else MODERN_HERO_FOCUS_DEBOUNCE_MS
+                                        )
+                                        lastHeroNavigationAtMsRef.set(now)
+                                        focusHolder.activeRowKey = rowKey
+                                        focusHolder.activeItemIndex = index
+                                        activeRowKey = rowKey
+                                        activeItemIndex = index
+                                    }
+                                    if (focusedItemByRow[rowKey] != index) {
+                                        focusedItemByRow[rowKey] = index
+                                    }
+                                    if (isContinueWatchingRow) {
+                                        if (lastFocusedContinueWatchingIndexRef.get() != index) {
+                                            lastFocusedContinueWatchingIndexRef.set(index)
+                                        }
+                                    }
+                                    if (isContinueWatchingRow) {
+                                        if (focusedCatalogSelection != null) {
+                                            focusedCatalogSelection = null
+                                        }
+                                    }
+                                }
+                            }
+                            ModernRowSection(
+                                row = row,
+                                isActiveRow = row.key == activeRowKey,
+                                isVerticalRowsScrolling = isVerticalRowsScrolling,
+                                rowTitleBottom = rowTitleBottom,
+                                defaultBringIntoViewSpec = defaultBringIntoViewSpec,
+                                focusStateCatalogRowScrollIndex = remember(focusState.catalogRowScrollStates, row.key) {
+                                    focusState.catalogRowScrollStates[row.key] ?: 0
+                                },
+                                uiCaches = uiCaches,
+                                pendingRowFocusKey = pendingRowFocusKey,
+                                pendingRowFocusIndex = pendingRowFocusIndex,
+                                pendingRowFocusNonce = pendingRowFocusNonce,
+                                onPendingRowFocusCleared = remember(Unit) {
+                                    {
+                                        pendingRowFocusKey = null
+                                        pendingRowFocusIndex = null
+                                    }
+                                },
+                                onRowItemFocused = stableOnRowItemFocused,
+                                useLandscapePosters = useLandscapePosters,
+                                showLabels = uiState.posterLabelsEnabled,
+                                posterCardCornerRadius = posterCardCornerRadius,
+                                focusedPosterBackdropTrailerMuted = uiState.focusedPosterBackdropTrailerMuted,
+                                effectiveExpandEnabled = effectiveExpandEnabled,
+                                effectiveAutoplayEnabled = effectiveAutoplayEnabled,
+                                trailerPlaybackTarget = trailerPlaybackTarget,
+                                expandedCatalogFocusKey = expandedCatalogFocusKey,
+                                expandedTrailerPreviewUrl = expandedCatalogTrailerUrl,
+                                expandedTrailerPreviewAudioUrl = expandedCatalogTrailerAudioUrl,
+                                portraitCatalogCardWidth = portraitCatalogCardWidth,
+                                portraitCatalogCardHeight = portraitCatalogCardHeight,
+                                landscapeCatalogCardWidth = landscapeCatalogCardWidth,
+                                landscapeCatalogCardHeight = landscapeCatalogCardHeight,
+                                continueWatchingCardWidth = continueWatchingCardWidth,
+                                continueWatchingCardHeight = continueWatchingCardHeight,
+                                blurUnwatchedEpisodes = uiState.blurUnwatchedEpisodes,
+                                onContinueWatchingClick = onContinueWatchingClick,
+                                onContinueWatchingOptions = stableOnContinueWatchingOptions,
+                                isCatalogItemWatched = isCatalogItemWatched,
+                                onCatalogItemLongPress = onCatalogItemLongPress,
+                                onItemFocus = onItemFocus,
+                                onPreloadAdjacentItem = onPreloadAdjacentItem,
+                                enrichedPreviews = enrichedPreviews,
+                                onCatalogSelectionFocused = remember(Unit) {
+                                    { selection: FocusedCatalogSelection ->
+                                        val isCollectionFolder = selection.payload is ModernPayload.CollectionFolder
+                                        if (focusedCatalogSelection != selection || isCollectionFolder) {
+                                            focusedCatalogSelection = selection
+                                            if (isCollectionFolder) {
+                                                focusedHeroMediaNonce++
+                                            }
+                                        }
+                                    }
+                                },
+                                onNavigateToDetail = onNavigateToDetail,
+                                onNavigateToFolderDetail = onNavigateToFolderDetail,
+                                onLoadMoreCatalog = onLoadMoreCatalog,
+                                onBackdropInteraction = remember(Unit) { { expansionInteractionNonce++ } },
+                                onExpandedCatalogFocusKeyChange = remember(Unit) { { expandedCatalogFocusKey = it } }
+                            )
+                }
+            }
+        }
+    }
+
+    val selectedOptionsItem = optionsItem
+    if (selectedOptionsItem != null) {
+        ContinueWatchingOptionsDialog(
+            item = selectedOptionsItem,
+            onDismiss = { optionsItem = null },
+            onRemove = {
+                val targetIndex = if (uiState.continueWatchingItems.size <= 1) {
+                    null
+                } else {
+                    minOf(lastFocusedContinueWatchingIndexRef.get(), uiState.continueWatchingItems.size - 2)
+                        .coerceAtLeast(0)
+                }
+                pendingRowFocusKey = if (targetIndex != null) "continue_watching" else null
+                pendingRowFocusIndex = targetIndex
+                pendingRowFocusNonce++
+                onRemoveContinueWatching(
+                    selectedOptionsItem.contentId(),
+                    selectedOptionsItem.season(),
+                    selectedOptionsItem.episode(),
+                    selectedOptionsItem is ContinueWatchingItem.NextUp
+                )
+                optionsItem = null
+            },
+            onDetails = {
+                onNavigateToDetail(
+                    selectedOptionsItem.contentId(),
+                    selectedOptionsItem.contentType(),
+                    ""
+                )
+                optionsItem = null
+            },
+            onStartFromBeginning = {
+                onContinueWatchingStartFromBeginning(selectedOptionsItem)
+                optionsItem = null
+            },
+            showPlayManually = showContinueWatchingManualPlayOption,
+            onPlayManually = {
+                onContinueWatchingPlayManually(selectedOptionsItem)
+                optionsItem = null
+            }
+        )
+    }
+}

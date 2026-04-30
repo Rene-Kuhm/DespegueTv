@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio</string>
+    <string name="app_name">Despegue</string>
     <string name="type_movie">Film</string>
     <string name="type_series">Sorozat</string>
     <string name="type_unknown">Ismeretlen</string>
@@ -64,7 +64,7 @@
     <!-- HomeScreen -->
     <string name="home_no_addons">Nincsenek telepített bővítmények. A kezdéshez adj hozzá egyet.</string>
     <string name="home_no_catalog_addons">Nincsenek katalógusbővítmények. Telepíts egyet a tartalom megtekintéséhez.</string>
-    <string name="auth_notice_nuvio_logged_out">Kijelentkeztél a Nuvio-ból. Kérlek, jelentkezz be újra.</string>
+    <string name="auth_notice_despegue_logged_out">Kijelentkeztél a Despegue-ból. Kérlek, jelentkezz be újra.</string>
     <string name="auth_notice_trakt_logged_out">Kijelentkeztél a Trakt-ból. Kérlek, csatlakozz újra.</string>
     <string name="error_generic">Hiba történt</string>
 
@@ -317,10 +317,10 @@
 
     <!-- SupportersContributorsScreen -->
     <string name="supporters_contributors_title">Támogatók és közreműködők</string>
-    <string name="supporters_contributors_subtitle">A Nuvio támogatói, valamint a TV-s és mobil platformokon dolgozó közreműködők.</string>
+    <string name="supporters_contributors_subtitle">A Despegue támogatói, valamint a TV-s és mobil platformokon dolgozó közreműködők.</string>
     <string name="supporters_contributors_supporters_copy">A közreműködők és támogatók (adományozók) segítenek a projekt fenntartásában, az infrastruktúra finanszírozásában és az ambiciózus funkciók megvalósításában.</string>
-    <string name="supporters_contributors_donate_copy">A Nuvio ingyenes és nyílt forráskódú marad. Ha szeretnéd támogatni a projektet, segíthetsz a ráfordított idő és az infrastruktúra költségeinek fedezésében.</string>
-    <string name="supporters_contributors_donate_button">Nuvio támogatása</string>
+    <string name="supporters_contributors_donate_copy">A Despegue ingyenes és nyílt forráskódú marad. Ha szeretnéd támogatni a projektet, segíthetsz a ráfordított idő és az infrastruktúra költségeinek fedezésében.</string>
+    <string name="supporters_contributors_donate_button">Despegue támogatása</string>
     <string name="supporters_contributors_qr_title">Beolvasás a támogatáshoz</string>
     <string name="supporters_contributors_qr_subtitle">Nyisd meg a linket a telefonodon, és támogasd a Nuviót Ko-fin keresztül.</string>
     <string name="supporters_contributors_qr_hint">Irányítsd a kamerád a QR-kódra, vagy használd az alábbi gombot.</string>
@@ -380,8 +380,8 @@
     <string name="playback_resolution_matching_sub">Megjelenítési mód módosításának engedélyezése a videó felbontásához igazodva.</string>
     <string name="playback_player_external_desc">Streamek megnyitása mindig külső alkalmazásban.</string>
     <string name="playback_player_ask_desc">Lejátszó kiválasztása minden alkalommal.</string>
-    <string name="playback_engine_exoplayer_desc">Legjobb kompatibilitás a jelenlegi Nuvio funkciókkal.</string>
-    <string name="playback_engine_mvplayer_desc">Libmpv-t használ a Nuvio OSD vezérlőivel. Kísérleti funkció.</string>
+    <string name="playback_engine_exoplayer_desc">Legjobb kompatibilitás a jelenlegi Despegue funkciókkal.</string>
+    <string name="playback_engine_mvplayer_desc">Libmpv-t használ a Despegue OSD vezérlőivel. Kísérleti funkció.</string>
 
     <!-- PlaybackAudioSettings -->
     <string name="audio_trailer_section">Előzetes</string>
@@ -697,13 +697,13 @@
     <string name="trakt_watch_progress_title">Megtekintési folyamat</string>
     <string name="trakt_watch_progress_subtitle">Válaszd ki, melyik folyamatforrás vezérelje a lejátszás folytatását</string>
     <string name="trakt_watch_progress_dialog_title">Megtekintési folyamat</string>
-    <string name="trakt_watch_progress_dialog_subtitle">Válaszd ki, hogy a lejátszás folytatása a Traktot vagy a Nuvio Sync-et használja-e, miközben a Trakt scrobbling aktív marad.</string>
+    <string name="trakt_watch_progress_dialog_subtitle">Válaszd ki, hogy a lejátszás folytatása a Traktot vagy a Despegue Sync-et használja-e, miközben a Trakt scrobbling aktív marad.</string>
     <string name="trakt_watch_progress_source_trakt">Trakt</string>
-    <string name="trakt_watch_progress_source_nuvio">Nuvio Sync</string>
+    <string name="trakt_watch_progress_source_despegue">Despegue Sync</string>
     <string name="trakt_setting_on">Be</string>
     <string name="trakt_setting_off">Ki</string>
     <string name="trakt_watch_progress_trakt_selected">Megtekintési folyamat forrása: Trakt</string>
-    <string name="trakt_watch_progress_nuvio_selected">Megtekintési folyamat forrása: Nuvio Sync</string>
+    <string name="trakt_watch_progress_despegue_selected">Megtekintési folyamat forrása: Despegue Sync</string>
     <string name="trakt_continue_watching_window">Folytatási időablak</string>
     <string name="trakt_continue_watching_subtitle">A Trakt előzmények figyelembe vétele a folytatáshoz</string>
     <string name="trakt_unaired_next_up">Még nem vetített epizódok</string>
@@ -725,7 +725,7 @@
     <string name="trakt_stat_watched_hours">Nézett órák</string>
     <string name="trakt_disconnect">Leválasztás</string>
     <string name="trakt_disconnect_title">Lecsatlakozol a Traktról?</string>
-    <string name="trakt_disconnect_subtitle">Ez megszünteti a kapcsolatot a Trakt fiókod és a Nuvio között.</string>
+    <string name="trakt_disconnect_subtitle">Ez megszünteti a kapcsolatot a Trakt fiókod és a Despegue között.</string>
     <string name="trakt_login">Bejelentkezés</string>
     <string name="trakt_retry">Újra</string>
     <string name="trakt_back">Vissza</string>
@@ -833,7 +833,7 @@
     <string name="profile_pin_overlay_set_support">Ez a PIN szükséges lesz a profil megnyitása előtt.</string>
     <string name="profile_pin_overlay_confirm_support">Írd be újra ugyanazt a 4 számjegyet a beállítás befejezéséhez.</string>
     <string name="profile_pin_overlay_mismatch">A PIN-kódok nem egyeznek. Add meg újra az új PIN-t.</string>
-    <string name="profile_pin_overlay_forgot_hint">Elfelejtetted a PIN-t? Állítsd alaphelyzetbe a Nuvio fiókodból a weboldalon.</string>
+    <string name="profile_pin_overlay_forgot_hint">Elfelejtetted a PIN-t? Állítsd alaphelyzetbe a Despegue fiókodból a weboldalon.</string>
     <string name="profile_pin_overlay_back_hint">Nyomd meg a vissza gombot a kilépéshez</string>
 
 
@@ -886,7 +886,7 @@
     <string name="stream_type_torrent">Torrent</string>
     <string name="stream_type_youtube">YouTube</string>
     <string name="p2p_consent_title">P2P Streamelés</string>
-    <string name="p2p_consent_body">Ez a stream peer-to-peer (P2P) technológiát használ. A P2P engedélyezésével tudomásul veszed és elfogadod, hogy:\n\n\u2022 Az IP címed látható lesz a hálózat más résztvevői számára\n\u2022 Kizárólag te vagy a felelős a megtekintett tartalomért\n\u2022 Megerősíted, hogy jogod van streamelni ezt a tartalmat a te joghatóságodban\n\u2022 A Nuvio nem tárol, terjeszt és nem is felügyel semmilyen P2P tartalmat\n\u2022 A Nuvio nem vállal felelősséget a P2P streamelésből eredő jogi következményekért\n\nEzt a funkciót kizárólag a saját felelősségedre használod. A P2P bármikor kikapcsolható a Beállításokban.</string>
+    <string name="p2p_consent_body">Ez a stream peer-to-peer (P2P) technológiát használ. A P2P engedélyezésével tudomásul veszed és elfogadod, hogy:\n\n\u2022 Az IP címed látható lesz a hálózat más résztvevői számára\n\u2022 Kizárólag te vagy a felelős a megtekintett tartalomért\n\u2022 Megerősíted, hogy jogod van streamelni ezt a tartalmat a te joghatóságodban\n\u2022 A Despegue nem tárol, terjeszt és nem is felügyel semmilyen P2P tartalmat\n\u2022 A Despegue nem vállal felelősséget a P2P streamelésből eredő jogi következményekért\n\nEzt a funkciót kizárólag a saját felelősségedre használod. A P2P bármikor kikapcsolható a Beállításokban.</string>
     <string name="p2p_consent_enable">P2P engedélyezése</string>
     <string name="p2p_consent_cancel">Mégse</string>
     <string name="settings_p2p_title">P2P Streamelés</string>
@@ -1127,7 +1127,7 @@
     <string name="library_delete_subtitle">Ez eltávolítja a listát és annak minden elemét a Trakt-ról.</string>
     <string name="library_delete_confirm">Törlés</string>
     <string name="library_source_local">HELYI</string>
-    <string name="library_source_nuvio">NUVIO</string>
+    <string name="library_source_despegue">DESPEGUE</string>
     <string name="library_source_trakt">TRAKT</string>
     <string name="library_syncing_library">Könyvtár szinkronizálása\u2026</string>
     <string name="library_type_all">Összes</string>
@@ -1245,7 +1245,7 @@
     <string name="catalog_see_all_empty_subtitle">Próbálkozz másik katalógussal, vagy térj vissza később</string>
 
     <!-- LayoutSelectionScreen -->
-    <string name="layout_selection_welcome">Üdvözöl a Nuvio</string>
+    <string name="layout_selection_welcome">Üdvözöl a Despegue</string>
     <string name="layout_selection_subtitle">Válaszd ki a kezdőképernyő elrendezését</string>
     <string name="layout_selection_continue">Folytatás</string>
 
@@ -1431,7 +1431,7 @@
     <string name="cd_preview">Előnézet</string>
     <string name="cd_test">Tesztelés</string>
     <string name="cd_unlink">Leválasztás</string>
-    <string name="cd_nuvio_logo">NuvioTV</string>
+    <string name="cd_despegue_logo">DespegueTV</string>
     <string name="cd_trakt_logo">Trakt logó</string>
     <string name="cd_trakt_qr">Trakt aktivációs QR-kód</string>
     <string name="cd_imdb">IMDb</string>
@@ -1442,7 +1442,7 @@
     <string name="cd_expand">Kibontás: %1$s</string>
     <string name="cd_collapse">Összecsukás: %1$s</string>
     <string name="cd_qr_login">QR-kódos bejelentkezés</string>
-    <string name="cd_nuvio">Nuvio</string>
+    <string name="cd_despegue">Despegue</string>
 
     <!-- Debug -->
     <string name="debug_signin_success">Sikeres bejelentkezés</string>
@@ -1466,7 +1466,7 @@
     <string name="collections_paste_clipboard">Beillesztés vágólapról</string>
     <string name="collections_validate">Elenőrzés</string>
     <string name="collections_paste_hint">Ide illeszd be a gyűjtemények JSON-t…</string>
-    <string name="collections_file_description">A nuvio-collections.json beolvasása a Letöltések mappából.</string>
+    <string name="collections_file_description">A despegue-collections.json beolvasása a Letöltések mappából.</string>
     <string name="collections_load_file">Fájl betöltése</string>
     <string name="collections_file_loaded">Fájl betöltve (%1$d karakter)</string>
     <string name="collections_fetch_url">URL lekérése</string>

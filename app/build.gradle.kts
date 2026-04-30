@@ -28,21 +28,38 @@ fun env(name: String): String? = providers.environmentVariable(name).orNull
 
 val buildingAppBundle = gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
 val useDebugReleaseSigning = env("CI_USE_DEBUG_SIGNING").equals("true", ignoreCase = true)
-val releaseStoreFilePath = env("NUVIO_RELEASE_STORE_FILE")
-    ?: localProperties.getProperty("NUVIO_RELEASE_STORE_FILE")
-val releaseKeyAliasValue = env("NUVIO_RELEASE_KEY_ALIAS")
-    ?: localProperties.getProperty("NUVIO_RELEASE_KEY_ALIAS", "nuviotv")
-val releaseKeyPasswordValue = env("NUVIO_RELEASE_KEY_PASSWORD")
-    ?: localProperties.getProperty("NUVIO_RELEASE_KEY_PASSWORD", "815787")
-val releaseStorePasswordValue = env("NUVIO_RELEASE_STORE_PASSWORD")
-    ?: localProperties.getProperty("NUVIO_RELEASE_STORE_PASSWORD", "815787")
+val releaseStoreFilePath = env("DESPEGUE_RELEASE_STORE_FILE")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_STORE_FILE")
+val releaseKeyAliasValue = env("DESPEGUE_RELEASE_KEY_ALIAS")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_KEY_ALIAS")
+val releaseKeyPasswordValue = env("DESPEGUE_RELEASE_KEY_PASSWORD")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_KEY_PASSWORD")
+val releaseStorePasswordValue = env("DESPEGUE_RELEASE_STORE_PASSWORD")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_STORE_PASSWORD")
+val hasReleaseSigningConfig = listOf(
+    releaseStoreFilePath,
+    releaseKeyAliasValue,
+    releaseKeyPasswordValue,
+    releaseStorePasswordValue
+).all { !it.isNullOrBlank() }
+val requestedReleaseBuild = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("Release", ignoreCase = true) || taskName.contains("Bundle", ignoreCase = true)
+}
+
+if (requestedReleaseBuild && !useDebugReleaseSigning && !hasReleaseSigningConfig) {
+    throw org.gradle.api.GradleException(
+        "Release signing requires DESPEGUE_RELEASE_STORE_FILE, DESPEGUE_RELEASE_KEY_ALIAS, " +
+            "DESPEGUE_RELEASE_KEY_PASSWORD and DESPEGUE_RELEASE_STORE_PASSWORD. " +
+            "For local testing only, set CI_USE_DEBUG_SIGNING=true."
+    )
+}
 
 android {
-    namespace = "com.nuvio.tv"
+    namespace = "com.despegue.tv"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.nuvio.tv"
+        applicationId = "com.despegue.tv"
         minSdk = 24
         targetSdk = 36
         versionCode = 61
@@ -58,15 +75,16 @@ android {
         buildConfigField("String", "TRAKT_API_URL", "\"${localProperties.getProperty("TRAKT_API_URL", "https://api.trakt.tv/")}\"")
         buildConfigField("String", "TRAKT_REDIRECT_URI", "\"${localProperties.getProperty("TRAKT_REDIRECT_URI", "urn:ietf:wg:oauth:2.0:oob")}\"")
         buildConfigField("String", "TMDB_API_KEY", "\"${localProperties.getProperty("TMDB_API_KEY", "")}\"")
-        buildConfigField("String", "TV_LOGIN_WEB_BASE_URL", "\"${localProperties.getProperty("TV_LOGIN_WEB_BASE_URL", "https://app.nuvio.tv/tv-login")}\"")
+        buildConfigField("String", "TV_LOGIN_WEB_BASE_URL", "\"${localProperties.getProperty("TV_LOGIN_WEB_BASE_URL", "https://app.despegue.tv/tv-login")}\"")
         buildConfigField("String", "DONATIONS_BASE_URL", "\"${localProperties.getProperty("DONATIONS_BASE_URL", "")}\"")
         buildConfigField("String", "DONATIONS_DONATE_URL", "\"${localProperties.getProperty("DONATIONS_DONATE_URL", "")}\"")
         buildConfigField("String", "AVATAR_PUBLIC_BASE_URL", "\"${localProperties.getProperty("AVATAR_PUBLIC_BASE_URL", "")}\"")
         buildConfigField("String", "UNIQUE_CONTRIBUTIONS_BASE_URL", "\"${localProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", "")}\"")
+        buildConfigField("String", "YOUTUBE_INNERTUBE_API_KEY", "\"${localProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", "")}\"")
 
         // In-app updater (GitHub Releases)
-        buildConfigField("String", "GITHUB_OWNER", "\"tapframe\"")
-        buildConfigField("String", "GITHUB_REPO", "\"NuvioTV\"")
+        buildConfigField("String", "GITHUB_OWNER", "\"Rene-Kuhm\"")
+        buildConfigField("String", "GITHUB_REPO", "\"DespegueTv\"")
     }
 
     flavorDimensions += "distribution"
@@ -80,7 +98,7 @@ android {
         }
         create("playstore") {
             dimension = "distribution"
-            applicationId = "com.nuvio.app"
+            applicationId = "com.despegue.app"
             buildConfigField("boolean", "FEATURE_PLUGINS_ENABLED", "false")
             buildConfigField("boolean", "FEATURE_IN_APP_UPDATES_ENABLED", "false")
             buildConfigField("boolean", "FEATURE_IN_APP_TRAILERS_ENABLED", "false")
@@ -90,17 +108,19 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = releaseKeyAliasValue
-            keyPassword = releaseKeyPasswordValue
-            storeFile = releaseStoreFilePath?.let(::file) ?: file("../nuviotv.jks")
-            storePassword = releaseStorePasswordValue
+            if (hasReleaseSigningConfig) {
+                keyAlias = releaseKeyAliasValue
+                keyPassword = releaseKeyPasswordValue
+                storeFile = releaseStoreFilePath?.let(::file)
+                storePassword = releaseStorePasswordValue
+            }
         }
     }
 
     buildTypes {
         debug {
-            signingConfig = signingConfigs.getByName("release")
-            isDebuggable = false
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = true
             isMinifyEnabled = false
 
             buildConfigField("boolean", "IS_DEBUG_BUILD", "true")
@@ -108,7 +128,7 @@ android {
             // Dev environment (from local.dev.properties)
             buildConfigField("String", "SUPABASE_URL", "\"${devProperties.getProperty("SUPABASE_URL", "")}\"")
             buildConfigField("String", "SUPABASE_ANON_KEY", "\"${devProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
-            buildConfigField("String", "TV_LOGIN_WEB_BASE_URL", "\"${devProperties.getProperty("TV_LOGIN_WEB_BASE_URL", "https://app.nuvio.tv/tv-login")}\"")
+            buildConfigField("String", "TV_LOGIN_WEB_BASE_URL", "\"${devProperties.getProperty("TV_LOGIN_WEB_BASE_URL", "https://app.despegue.tv/tv-login")}\"")
             buildConfigField("String", "PARENTAL_GUIDE_API_URL", "\"${devProperties.getProperty("PARENTAL_GUIDE_API_URL", "")}\"")
             buildConfigField("String", "INTRODB_API_URL", "\"${devProperties.getProperty("INTRODB_API_URL", "")}\"")
             buildConfigField("String", "TRAILER_API_URL", "\"${devProperties.getProperty("TRAILER_API_URL", "")}\"")
@@ -118,6 +138,7 @@ android {
             buildConfigField("String", "DONATIONS_DONATE_URL", "\"${devProperties.getProperty("DONATIONS_DONATE_URL", localProperties.getProperty("DONATIONS_DONATE_URL", ""))}\"")
             buildConfigField("String", "AVATAR_PUBLIC_BASE_URL", "\"${devProperties.getProperty("AVATAR_PUBLIC_BASE_URL", localProperties.getProperty("AVATAR_PUBLIC_BASE_URL", ""))}\"")
             buildConfigField("String", "UNIQUE_CONTRIBUTIONS_BASE_URL", "\"${devProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", localProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", ""))}\"")
+            buildConfigField("String", "YOUTUBE_INNERTUBE_API_KEY", "\"${devProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", localProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", ""))}\"")
         }
         release {
             isMinifyEnabled = true
@@ -137,7 +158,7 @@ android {
             // Production environment (from local.properties)
             buildConfigField("String", "SUPABASE_URL", "\"${localProperties.getProperty("SUPABASE_URL", "")}\"")
             buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
-            buildConfigField("String", "TV_LOGIN_WEB_BASE_URL", "\"${localProperties.getProperty("TV_LOGIN_WEB_BASE_URL", "https://app.nuvio.tv/tv-login")}\"")
+            buildConfigField("String", "TV_LOGIN_WEB_BASE_URL", "\"${localProperties.getProperty("TV_LOGIN_WEB_BASE_URL", "https://app.despegue.tv/tv-login")}\"")
             buildConfigField("String", "PARENTAL_GUIDE_API_URL", "\"${localProperties.getProperty("PARENTAL_GUIDE_API_URL", "")}\"")
             buildConfigField("String", "INTRODB_API_URL", "\"${localProperties.getProperty("INTRODB_API_URL", "")}\"")
             buildConfigField("String", "TRAILER_API_URL", "\"${localProperties.getProperty("TRAILER_API_URL", "")}\"")
@@ -147,6 +168,7 @@ android {
             buildConfigField("String", "DONATIONS_DONATE_URL", "\"${localProperties.getProperty("DONATIONS_DONATE_URL", "")}\"")
             buildConfigField("String", "AVATAR_PUBLIC_BASE_URL", "\"${localProperties.getProperty("AVATAR_PUBLIC_BASE_URL", "")}\"")
             buildConfigField("String", "UNIQUE_CONTRIBUTIONS_BASE_URL", "\"${localProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", "")}\"")
+            buildConfigField("String", "YOUTUBE_INNERTUBE_API_KEY", "\"${localProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", "")}\"")
         }
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
@@ -214,7 +236,7 @@ android {
 androidComponents {
     onVariants(selector().withBuildType("debug")) { variant ->
         val isPlaystore = variant.productFlavors.any { it.second == "playstore" }
-        variant.applicationId.set(if (isPlaystore) "com.nuvio.appdebug" else "com.nuviodebug.com")
+        variant.applicationId.set(if (isPlaystore) "com.despegue.appdebug" else "com.despeguedebug.com")
     }
 }
 
@@ -237,7 +259,7 @@ baselineProfile {
     mergeIntoMain = true
     baselineProfileOutputDir = "src/main"
     filter {
-        include("com.nuvio.tv.**")
+        include("com.despegue.tv.**")
     }
 }
 
@@ -331,7 +353,7 @@ dependencies {
 
     implementation(libs.gson)
 
-    add("fullImplementation", files("libs/quickjs-kt-android-1.0.5-nuvio.aar"))
+    add("fullImplementation", files("libs/quickjs-kt-android-1.0.5-despegue.aar"))
     add("fullImplementation", libs.jsoup)
     add("fullImplementation", "com.fasterxml.jackson.core:jackson-databind:2.17.0")
     add("fullImplementation", "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
