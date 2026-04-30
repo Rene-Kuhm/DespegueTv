@@ -1521,7 +1521,7 @@ private fun ContributorDetailsDialog(
 
 private fun contributorRoleLabel(login: String): String? = when (login.lowercase(Locale.ROOT)) {
     "milicevicivan" -> "Translator"
-    "tapframe" -> "Maintainer"
+    "rene-kuhm" -> "Maintainer"
     else -> null
 }
 

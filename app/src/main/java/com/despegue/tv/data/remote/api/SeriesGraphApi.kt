@@ -27,7 +27,7 @@ interface SeriesGraphApi {
     ): Response<List<SeriesGraphSeasonRatingsDto>>
 }
 
-interface ImdbTapframeApi {
+interface ImdbEpisodeRatingsApi {
     @GET("api/shows/{imdbId}/season-ratings")
     suspend fun getSeasonRatings(
         @Path("imdbId") imdbId: String

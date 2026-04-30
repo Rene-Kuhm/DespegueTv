@@ -1,7 +1,7 @@
 package com.despegue.tv.data.repository
 
 import android.util.Log
-import com.despegue.tv.data.remote.api.ImdbTapframeApi
+import com.despegue.tv.data.remote.api.ImdbEpisodeRatingsApi
 import com.despegue.tv.data.remote.api.SeriesGraphApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ImdbEpisodeRatingsRepository @Inject constructor(
-    private val imdbTapframeApi: ImdbTapframeApi,
+    private val imdbEpisodeRatingsApi: ImdbEpisodeRatingsApi,
     private val seriesGraphApi: SeriesGraphApi
 ) {
     private data class CacheEntry(
@@ -82,7 +82,7 @@ class ImdbEpisodeRatingsRepository @Inject constructor(
         tmdbId: Int?
     ): Map<Pair<Int, Int>, Double> {
         if (!imdbId.isNullOrBlank()) {
-            val primary = fetchFromImdbTapframe(imdbId)
+            val primary = fetchFromImdbEpisodeRatingsApi(imdbId)
             if (primary.isNotEmpty()) return primary
             Log.w(tag, "Primary episode ratings empty for imdbId=$imdbId, trying fallback.")
         }
@@ -94,9 +94,9 @@ class ImdbEpisodeRatingsRepository @Inject constructor(
         return emptyMap()
     }
 
-    private suspend fun fetchFromImdbTapframe(imdbId: String): Map<Pair<Int, Int>, Double> {
+    private suspend fun fetchFromImdbEpisodeRatingsApi(imdbId: String): Map<Pair<Int, Int>, Double> {
         return try {
-            val response = imdbTapframeApi.getSeasonRatings(imdbId)
+            val response = imdbEpisodeRatingsApi.getSeasonRatings(imdbId)
             if (!response.isSuccessful) {
                 Log.w(tag, "Failed primary season ratings for imdbId=$imdbId (${response.code()})")
                 return emptyMap()
