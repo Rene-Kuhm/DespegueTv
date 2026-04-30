@@ -1,5 +1,6 @@
 package com.despegue.tv.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.foundation.background
@@ -33,7 +34,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import com.despegue.tv.R
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -83,10 +84,12 @@ fun SidebarNavigation(
             },
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = "DESPEGUE",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            color = DespegueColors.Primary
+        Image(
+            painter = painterResource(id = R.drawable.app_logo_wordmark),
+            contentDescription = "DespegueTV",
+            modifier = Modifier
+                .fillMaxWidth(0.78f)
+                .height(34.dp)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
