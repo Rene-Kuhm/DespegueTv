@@ -146,7 +146,7 @@ fun AboutSettingsContent(
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://tapframe.github.io/DespegueStreaming/#privacy-policy")
+                            Uri.parse("https://Rene-Kuhm.github.io/DespegueTv/#privacy-policy")
                         )
                         context.startActivity(intent)
                     }
