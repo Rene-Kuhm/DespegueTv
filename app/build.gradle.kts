@@ -31,11 +31,28 @@ val useDebugReleaseSigning = env("CI_USE_DEBUG_SIGNING").equals("true", ignoreCa
 val releaseStoreFilePath = env("DESPEGUE_RELEASE_STORE_FILE")
     ?: localProperties.getProperty("DESPEGUE_RELEASE_STORE_FILE")
 val releaseKeyAliasValue = env("DESPEGUE_RELEASE_KEY_ALIAS")
-    ?: localProperties.getProperty("DESPEGUE_RELEASE_KEY_ALIAS", "despeguetv")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_KEY_ALIAS")
 val releaseKeyPasswordValue = env("DESPEGUE_RELEASE_KEY_PASSWORD")
-    ?: localProperties.getProperty("DESPEGUE_RELEASE_KEY_PASSWORD", "815787")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_KEY_PASSWORD")
 val releaseStorePasswordValue = env("DESPEGUE_RELEASE_STORE_PASSWORD")
-    ?: localProperties.getProperty("DESPEGUE_RELEASE_STORE_PASSWORD", "815787")
+    ?: localProperties.getProperty("DESPEGUE_RELEASE_STORE_PASSWORD")
+val hasReleaseSigningConfig = listOf(
+    releaseStoreFilePath,
+    releaseKeyAliasValue,
+    releaseKeyPasswordValue,
+    releaseStorePasswordValue
+).all { !it.isNullOrBlank() }
+val requestedReleaseBuild = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("Release", ignoreCase = true) || taskName.contains("Bundle", ignoreCase = true)
+}
+
+if (requestedReleaseBuild && !useDebugReleaseSigning && !hasReleaseSigningConfig) {
+    throw org.gradle.api.GradleException(
+        "Release signing requires DESPEGUE_RELEASE_STORE_FILE, DESPEGUE_RELEASE_KEY_ALIAS, " +
+            "DESPEGUE_RELEASE_KEY_PASSWORD and DESPEGUE_RELEASE_STORE_PASSWORD. " +
+            "For local testing only, set CI_USE_DEBUG_SIGNING=true."
+    )
+}
 
 android {
     namespace = "com.despegue.tv"
@@ -63,10 +80,11 @@ android {
         buildConfigField("String", "DONATIONS_DONATE_URL", "\"${localProperties.getProperty("DONATIONS_DONATE_URL", "")}\"")
         buildConfigField("String", "AVATAR_PUBLIC_BASE_URL", "\"${localProperties.getProperty("AVATAR_PUBLIC_BASE_URL", "")}\"")
         buildConfigField("String", "UNIQUE_CONTRIBUTIONS_BASE_URL", "\"${localProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", "")}\"")
+        buildConfigField("String", "YOUTUBE_INNERTUBE_API_KEY", "\"${localProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", "")}\"")
 
         // In-app updater (GitHub Releases)
-        buildConfigField("String", "GITHUB_OWNER", "\"tapframe\"")
-        buildConfigField("String", "GITHUB_REPO", "\"DespegueTV\"")
+        buildConfigField("String", "GITHUB_OWNER", "\"Rene-Kuhm\"")
+        buildConfigField("String", "GITHUB_REPO", "\"DespegueTv\"")
     }
 
     flavorDimensions += "distribution"
@@ -90,17 +108,19 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = releaseKeyAliasValue
-            keyPassword = releaseKeyPasswordValue
-            storeFile = releaseStoreFilePath?.let(::file) ?: file("../despeguetv.jks")
-            storePassword = releaseStorePasswordValue
+            if (hasReleaseSigningConfig) {
+                keyAlias = releaseKeyAliasValue
+                keyPassword = releaseKeyPasswordValue
+                storeFile = releaseStoreFilePath?.let(::file)
+                storePassword = releaseStorePasswordValue
+            }
         }
     }
 
     buildTypes {
         debug {
-            signingConfig = signingConfigs.getByName("release")
-            isDebuggable = false
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = true
             isMinifyEnabled = false
 
             buildConfigField("boolean", "IS_DEBUG_BUILD", "true")
@@ -118,6 +138,7 @@ android {
             buildConfigField("String", "DONATIONS_DONATE_URL", "\"${devProperties.getProperty("DONATIONS_DONATE_URL", localProperties.getProperty("DONATIONS_DONATE_URL", ""))}\"")
             buildConfigField("String", "AVATAR_PUBLIC_BASE_URL", "\"${devProperties.getProperty("AVATAR_PUBLIC_BASE_URL", localProperties.getProperty("AVATAR_PUBLIC_BASE_URL", ""))}\"")
             buildConfigField("String", "UNIQUE_CONTRIBUTIONS_BASE_URL", "\"${devProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", localProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", ""))}\"")
+            buildConfigField("String", "YOUTUBE_INNERTUBE_API_KEY", "\"${devProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", localProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", ""))}\"")
         }
         release {
             isMinifyEnabled = true
@@ -147,6 +168,7 @@ android {
             buildConfigField("String", "DONATIONS_DONATE_URL", "\"${localProperties.getProperty("DONATIONS_DONATE_URL", "")}\"")
             buildConfigField("String", "AVATAR_PUBLIC_BASE_URL", "\"${localProperties.getProperty("AVATAR_PUBLIC_BASE_URL", "")}\"")
             buildConfigField("String", "UNIQUE_CONTRIBUTIONS_BASE_URL", "\"${localProperties.getProperty("UNIQUE_CONTRIBUTIONS_BASE_URL", "")}\"")
+            buildConfigField("String", "YOUTUBE_INNERTUBE_API_KEY", "\"${localProperties.getProperty("YOUTUBE_INNERTUBE_API_KEY", "")}\"")
         }
         create("benchmark") {
             initWith(buildTypes.getByName("release"))

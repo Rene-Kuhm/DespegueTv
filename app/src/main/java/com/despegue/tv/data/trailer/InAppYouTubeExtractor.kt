@@ -2,8 +2,8 @@ package com.despegue.tv.data.trailer
 
 import android.net.Uri
 import android.util.Log
-import com.google.gson.Gson
 import com.despegue.tv.BuildConfig
+import com.google.gson.Gson
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -211,7 +211,11 @@ class InAppYouTubeExtractor @Inject constructor() {
             }
 
             val parsed = getWatchConfig(watchResponse.body)
-            val apiKey = parsed.apiKey ?: "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8" // fallback key
+            val apiKey = parsed.apiKey ?: BuildConfig.YOUTUBE_INNERTUBE_API_KEY
+            require(apiKey.isNotBlank()) {
+                "YouTube Innertube API key was not discovered from the watch page and no " +
+                    "YOUTUBE_INNERTUBE_API_KEY was configured."
+            }
             val newConfig = CachedConfig(
                 apiKey = apiKey,
                 visitorData = parsed.visitorData
