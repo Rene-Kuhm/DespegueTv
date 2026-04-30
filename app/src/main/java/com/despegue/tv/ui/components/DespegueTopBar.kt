@@ -35,7 +35,7 @@ fun DespegueTopBar(
         Image(
             painter = painterResource(id = R.drawable.app_logo_wordmark),
             contentDescription = "DespegueTV",
-            modifier = Modifier.height(40.dp)
+            modifier = Modifier.height(48.dp)
         )
 
         Row(

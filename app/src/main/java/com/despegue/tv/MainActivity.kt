@@ -215,10 +215,11 @@ class MainActivity : ComponentActivity() {
             config.setLocale(locale)
             super.attachBaseContext(newBase.createConfigurationContext(config))
         } else {
-            val systemLocale = ConfigurationCompat.getLocales(newBase.resources.configuration)[0]
-                ?: Locale.getDefault(Locale.Category.DISPLAY)
-            Locale.setDefault(systemLocale)
-            super.attachBaseContext(newBase)
+            val defaultLocale = Locale.forLanguageTag("es")
+            Locale.setDefault(defaultLocale)
+            val config = Configuration(newBase.resources.configuration)
+            config.setLocale(defaultLocale)
+            super.attachBaseContext(newBase.createConfigurationContext(config))
         }
     }
 
