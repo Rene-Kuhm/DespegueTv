@@ -169,6 +169,18 @@ class AddonPreferences @Inject constructor(
         // Subtitles
         "https://opensubtitles-v3.strem.io",
         // Verified working torrent source for Spanish content
-        "https://torrentio.strem.fun"
+        "https://torrentio.strem.fun",
+        // Streaming catalogs (Netflix, Disney+, HBO, etc.)
+        "https://streaming-catalogs.strem.io",
+        // ThePirateBay+ (massive torrent catalog)
+        "https://thepiratebay-plus.strem.io",
+        // Peerflix (Spanish content, awards movies)
+        "https://peerflix-addon.strem.io",
+        // Marvel Cinematic Universe
+        "https://marvel.strem.io",
+        // DC Universe (pre-configured instance)
+        "https://addon-dc-cq85.onrender.com",
+        // Latino Movies (specialized Spanish Latino content)
+        "https://latino-movies.strem.io"
     )
 }
