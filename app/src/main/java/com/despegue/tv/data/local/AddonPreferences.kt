@@ -168,19 +168,15 @@ class AddonPreferences @Inject constructor(
         "https://v3-cinemeta.strem.io",
         // Subtitles
         "https://opensubtitles-v3.strem.io",
-        // Verified working torrent source for Spanish content
+        // Torrentio - FREE torrent source for Spanish content
         "https://torrentio.strem.fun",
-        // Streaming catalogs (Netflix, Disney+, HBO, etc.)
-        "https://streaming-catalogs.strem.io",
-        // ThePirateBay+ (massive torrent catalog)
-        "https://thepiratebay-plus.strem.io",
-        // Peerflix (Spanish content, awards movies)
-        "https://peerflix-addon.strem.io",
-        // Marvel Cinematic Universe
-        "https://marvel.strem.io",
-        // DC Universe (pre-configured instance)
+        // ThePirateBay+ - FREE massive torrent catalog
+        "https://thepiratebay-plus.strem.fun",
+        // Marvel Cinematic Universe - FREE (no config needed)
+        "https://addon-marvel.onrender.com",
+        // DC Universe - FREE pre-configured
         "https://addon-dc-cq85.onrender.com",
-        // Latino Movies (specialized Spanish Latino content)
+        // Latino Movies - FREE Spanish Latino specialist
         "https://latino-movies.strem.io"
     )
 }
