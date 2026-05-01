@@ -119,8 +119,8 @@ val AVAILABLE_SUBTITLE_LANGUAGES = listOf(
  * Data class representing subtitle style settings
  */
 data class SubtitleStyleSettings(
-    val preferredLanguage: String = "en",
-    val secondaryPreferredLanguage: String? = null,
+    val preferredLanguage: String = "es-419",
+    val secondaryPreferredLanguage: String? = "es",
     val size: Int = 120, // Percentage (50-200)
     val verticalOffset: Int = 5, // Percentage from bottom (-20 to 50)
     val bold: Boolean = false,
@@ -171,8 +171,8 @@ data class PlayerSettings(
     val audioAmplificationDb: Int = 0,
     val persistAudioAmplification: Boolean = false,
     val rememberAudioDelayPerDevice: Boolean = true,
-    val preferredAudioLanguage: String = AudioLanguageOption.DEVICE,
-    val secondaryPreferredAudioLanguage: String? = null,
+    val preferredAudioLanguage: String = "es-419",
+    val secondaryPreferredAudioLanguage: String? = "es",
     val loadingOverlayEnabled: Boolean = true,
     val showPlayerLoadingStatus: Boolean = true,
     val pauseOverlayEnabled: Boolean = true,
@@ -185,11 +185,11 @@ data class PlayerSettings(
     val frameRateMatchingMode: FrameRateMatchingMode = FrameRateMatchingMode.OFF,
     val resolutionMatchingEnabled: Boolean = false,
     // Stream selection settings
-    val streamAutoPlayMode: StreamAutoPlayMode = StreamAutoPlayMode.MANUAL,
+    val streamAutoPlayMode: StreamAutoPlayMode = StreamAutoPlayMode.REGEX_MATCH,
     val streamAutoPlaySource: StreamAutoPlaySource = StreamAutoPlaySource.ALL_SOURCES,
     val streamAutoPlaySelectedAddons: Set<String> = emptySet(),
     val streamAutoPlaySelectedPlugins: Set<String> = emptySet(),
-    val streamAutoPlayRegex: String = "",
+    val streamAutoPlayRegex: String = "^(?!.*\\b(cam|hdcam|ts|telesync)\\b).*?(?i)(720p|1080p|2160p|4k|web[-\\s]?dl|bluray|b[dr]rip|remux|hdr|hevc|x265|x264).*$",
     val streamAutoPlayNextEpisodeEnabled: Boolean = false,
     val streamAutoPlayPreferBingeGroupForNextEpisode: Boolean = true,
     val streamAutoPlayTimeoutSeconds: Int = 3,

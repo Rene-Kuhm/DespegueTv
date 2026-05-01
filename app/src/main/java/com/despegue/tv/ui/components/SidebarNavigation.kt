@@ -88,8 +88,8 @@ fun SidebarNavigation(
             painter = painterResource(id = R.drawable.app_logo_wordmark),
             contentDescription = "DespegueTV",
             modifier = Modifier
-                .fillMaxWidth(0.88f)
-                .height(42.dp)
+                .fillMaxWidth()
+                .height(72.dp)
         )
 
         Spacer(modifier = Modifier.height(12.dp))

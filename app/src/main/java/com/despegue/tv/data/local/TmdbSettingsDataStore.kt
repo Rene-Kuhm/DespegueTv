@@ -45,7 +45,7 @@ class TmdbSettingsDataStore @Inject constructor(
                 enabled = prefs[enabledKey] ?: false,
                 modernHomeEnabled = prefs[modernHomeEnabledKey] ?: false,
                 enrichContinueWatching = prefs[enrichContinueWatchingKey] ?: true,
-                language = prefs[languageKey] ?: "en",
+                language = prefs[languageKey] ?: "es-419",
                 useArtwork = prefs[useArtworkKey] ?: true,
                 useBasicInfo = prefs[useBasicInfoKey] ?: true,
                 useDetails = prefs[useDetailsKey] ?: true,

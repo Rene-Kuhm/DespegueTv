@@ -173,8 +173,8 @@ internal fun ModernSidebarBlurPanel(
                     painter = painterResource(id = R.drawable.app_logo_wordmark),
                     contentDescription = "DespegueTV",
                     modifier = Modifier
-                        .fillMaxWidth(0.88f)
-                        .height(44.dp),
+                        .fillMaxWidth()
+                        .height(76.dp),
                     alpha = sidebarLabelAlpha
                 )
             }
