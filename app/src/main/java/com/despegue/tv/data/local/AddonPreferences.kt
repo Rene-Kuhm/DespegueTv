@@ -164,9 +164,20 @@ class AddonPreferences @Inject constructor(
     }
 
     private fun getDefaultAddons(): Set<String> = setOf(
+        // Metadata & Catalogs
         "https://v3-cinemeta.strem.io",
+        "https://tmdb.addon.strem.io",
+        "https://streaming-catalogs.strem.io",
+        // Subtitles
         "https://opensubtitles-v3.strem.io",
+        "https://subsource.strem.io",
+        // Torrent sources
         "https://torrentio.strem.fun",
-        "https://latino-movies.strem.io"
+        "https://thepiratebay-plus.strem.io",
+        "https://peerflix-addon.strem.io",
+        // Specialized content
+        "https://latino-movies.strem.io",
+        "https://marvel.strem.io",
+        "https://dc-universe.strem.io"
     )
 }
